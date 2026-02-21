@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { MapPin, ArrowRight } from "lucide-react";
-import { Business } from "@/lib/data";
 import { Lang, t } from "@/lib/i18n";
 import { CATEGORIES } from "@/lib/data";
+import type { BusinessRow } from "@/hooks/use-businesses";
 
 const CATEGORY_COLORS: Record<string, string> = {
   food: "bg-amber-50 text-amber-700",
@@ -17,7 +17,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 interface BusinessCardProps {
-  business: Business;
+  business: BusinessRow;
   lang: Lang;
 }
 
@@ -39,7 +39,6 @@ export function BusinessCard({ business, lang }: BusinessCardProps) {
       className="card-hover bg-card border border-border rounded-2xl overflow-hidden cursor-pointer"
       onClick={() => navigate(`/negocio/${business.id}`)}
     >
-      {/* Photo / Avatar header */}
       <div className="h-36 gradient-hero flex items-center justify-center relative">
         <div className="w-16 h-16 rounded-2xl bg-primary-foreground/20 flex items-center justify-center">
           <span className="font-display font-bold text-2xl text-primary-foreground">{initials}</span>
@@ -51,7 +50,6 @@ export function BusinessCard({ business, lang }: BusinessCardProps) {
         )}
       </div>
 
-      {/* Content */}
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="font-display font-semibold text-base text-foreground leading-snug line-clamp-1">
@@ -64,7 +62,7 @@ export function BusinessCard({ business, lang }: BusinessCardProps) {
         </span>
 
         <p className="text-sm text-muted-foreground line-clamp-2 mb-3 leading-relaxed">
-          {lang === "en" && business.descriptionEn ? business.descriptionEn : business.description}
+          {lang === "en" && business.description_en ? business.description_en : business.description}
         </p>
 
         <div className="flex items-center justify-between">

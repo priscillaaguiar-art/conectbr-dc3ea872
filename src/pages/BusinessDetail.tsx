@@ -4,15 +4,27 @@ import { ArrowLeft, MapPin, MessageCircle, Instagram, Phone, Mail, ExternalLink 
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Lang, t } from "@/lib/i18n";
-import { MOCK_BUSINESSES, CATEGORIES } from "@/lib/data";
+import { CATEGORIES } from "@/lib/data";
+import { useBusinessById } from "@/hooks/use-businesses";
 
 export default function BusinessDetail() {
   const [lang, setLang] = useState<Lang>("pt");
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const business = MOCK_BUSINESSES.find((b) => b.id === id);
+  const { data: business, isLoading } = useBusinessById(id);
   const cat = business ? CATEGORIES.find((c) => c.key === business.category) : null;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar lang={lang} onLangChange={setLang} />
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
+          {lang === "pt" ? "Carregando..." : "Loading..."}
+        </div>
+      </div>
+    );
+  }
 
   if (!business) {
     return (
@@ -26,14 +38,13 @@ export default function BusinessDetail() {
   }
 
   const initials = business.name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
-  const description = lang === "en" && business.descriptionEn ? business.descriptionEn : business.description;
+  const description = lang === "en" && business.description_en ? business.description_en : business.description;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar lang={lang} onLangChange={setLang} />
 
       <main className="container mx-auto px-4 py-8 max-w-3xl flex-1">
-        {/* Back */}
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
@@ -42,9 +53,7 @@ export default function BusinessDetail() {
           {t(lang, "back_results")}
         </button>
 
-        {/* Hero card */}
         <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-card mb-6">
-          {/* Banner */}
           <div className="h-40 gradient-hero relative flex items-center justify-center">
             <div className="w-20 h-20 rounded-2xl bg-primary-foreground/20 flex items-center justify-center">
               <span className="font-display font-bold text-3xl text-primary-foreground">{initials}</span>
@@ -56,7 +65,6 @@ export default function BusinessDetail() {
             )}
           </div>
 
-          {/* Info */}
           <div className="p-6">
             <div className="flex items-start gap-3 flex-wrap mb-4">
               <div>
@@ -69,13 +77,11 @@ export default function BusinessDetail() {
               </div>
             </div>
 
-            {/* Location */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
               <MapPin className="w-4 h-4 text-primary" />
               <span>{business.city}, Ontario, Canada</span>
             </div>
 
-            {/* Description */}
             <div className="mb-6">
               <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                 {t(lang, "description")}
@@ -83,7 +89,6 @@ export default function BusinessDetail() {
               <p className="text-foreground leading-relaxed">{description}</p>
             </div>
 
-            {/* Contact buttons */}
             <div className="border-t border-border pt-6">
               <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
                 {t(lang, "contact")}
@@ -136,7 +141,6 @@ export default function BusinessDetail() {
           </div>
         </div>
 
-        {/* Premium badge placeholder */}
         <div className="bg-accent-muted border border-accent/20 rounded-2xl p-5 flex items-center gap-4">
           <span className="text-2xl">⭐</span>
           <div>

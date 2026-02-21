@@ -5,11 +5,13 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Lang, t } from "@/lib/i18n";
 import { CATEGORIES, ONTARIO_CITIES } from "@/lib/data";
+import { useInsertBusiness } from "@/hooks/use-businesses";
 
 export default function RegisterBusiness() {
   const [lang, setLang] = useState<Lang>("pt");
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+  const insertBusiness = useInsertBusiness();
 
   const [form, setForm] = useState({
     name: "",
@@ -36,14 +38,28 @@ export default function RegisterBusiness() {
     return newErrors;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
-    setSubmitted(true);
+    try {
+      await insertBusiness.mutateAsync({
+        name: form.name,
+        category: form.category,
+        city: form.city,
+        description: form.description,
+        whatsapp: form.whatsapp || undefined,
+        instagram: form.instagram || undefined,
+        phone: form.phone || undefined,
+        email: form.email || undefined,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Error registering business:", err);
+    }
   };
 
   const update = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -255,8 +271,10 @@ export default function RegisterBusiness() {
             </div>
           </div>
 
-          <button type="submit" className="btn-accent w-full py-4 text-base">
-            {t(lang, "form_save")}
+          <button type="submit" disabled={insertBusiness.isPending} className="btn-accent w-full py-4 text-base">
+            {insertBusiness.isPending
+              ? (lang === "pt" ? "Salvando..." : "Saving...")
+              : t(lang, "form_save")}
           </button>
         </form>
       </main>

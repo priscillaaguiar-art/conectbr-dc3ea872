@@ -2,38 +2,37 @@ import { useState } from "react";
 import { CheckCircle, XCircle, Trash2, MessageSquare, Building2, Clock } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Lang, t } from "@/lib/i18n";
-import { MOCK_BUSINESSES, FEEDBACKS, Business, CATEGORIES } from "@/lib/data";
+import { CATEGORIES } from "@/lib/data";
+import {
+  useAllBusinesses,
+  useUpdateBusinessStatus,
+  useDeleteBusiness,
+  useFeedbacks,
+  BusinessRow,
+} from "@/hooks/use-businesses";
 
 type Tab = "pending" | "approved" | "feedbacks";
 
 export default function Admin() {
   const [lang, setLang] = useState<Lang>("pt");
   const [activeTab, setActiveTab] = useState<Tab>("pending");
-  const [businesses, setBusinesses] = useState<Business[]>(MOCK_BUSINESSES);
+
+  const { data: businesses = [], isLoading } = useAllBusinesses();
+  const { data: feedbacks = [] } = useFeedbacks();
+  const updateStatus = useUpdateBusinessStatus();
+  const deleteBusiness = useDeleteBusiness();
 
   const pending = businesses.filter((b) => b.status === "pending");
   const approved = businesses.filter((b) => b.status === "approved");
 
-  const approve = (id: string) => {
-    setBusinesses((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, status: "approved" } : b))
-    );
-  };
-
-  const reject = (id: string) => {
-    setBusinesses((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, status: "rejected" } : b))
-    );
-  };
-
-  const remove = (id: string) => {
-    setBusinesses((prev) => prev.filter((b) => b.id !== id));
-  };
+  const approve = (id: string) => updateStatus.mutate({ id, status: "approved" });
+  const reject = (id: string) => updateStatus.mutate({ id, status: "rejected" });
+  const remove = (id: string) => deleteBusiness.mutate(id);
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode; count?: number }[] = [
     { key: "pending", label: t(lang, "admin_pending"), icon: <Clock className="w-4 h-4" />, count: pending.length },
     { key: "approved", label: t(lang, "admin_approved"), icon: <CheckCircle className="w-4 h-4" />, count: approved.length },
-    { key: "feedbacks", label: t(lang, "admin_feedbacks"), icon: <MessageSquare className="w-4 h-4" />, count: FEEDBACKS.length },
+    { key: "feedbacks", label: t(lang, "admin_feedbacks"), icon: <MessageSquare className="w-4 h-4" />, count: feedbacks.length },
   ];
 
   return (
@@ -41,7 +40,6 @@ export default function Admin() {
       <Navbar lang={lang} onLangChange={setLang} />
 
       <div className="container mx-auto px-4 py-10 max-w-4xl">
-        {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-xl gradient-hero flex items-center justify-center">
             <Building2 className="w-5 h-5 text-primary-foreground" />
@@ -52,7 +50,6 @@ export default function Admin() {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-2 mb-6 border-b border-border">
           {tabs.map((tab) => (
             <button
@@ -77,56 +74,61 @@ export default function Admin() {
           ))}
         </div>
 
-        {/* Pending */}
-        {activeTab === "pending" && (
-          <div>
-            {pending.length === 0 ? (
-              <div className="text-center py-16 text-muted-foreground">
-                <CheckCircle className="w-10 h-10 mx-auto mb-3 text-secondary" />
-                <p>{t(lang, "no_pending")}</p>
+        {isLoading ? (
+          <div className="text-center py-16 text-muted-foreground">
+            {lang === "pt" ? "Carregando..." : "Loading..."}
+          </div>
+        ) : (
+          <>
+            {activeTab === "pending" && (
+              <div>
+                {pending.length === 0 ? (
+                  <div className="text-center py-16 text-muted-foreground">
+                    <CheckCircle className="w-10 h-10 mx-auto mb-3 text-secondary" />
+                    <p>{t(lang, "no_pending")}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {pending.map((b) => (
+                      <BusinessAdminCard
+                        key={b.id}
+                        business={b}
+                        lang={lang}
+                        onApprove={() => approve(b.id)}
+                        onReject={() => reject(b.id)}
+                        onDelete={() => remove(b.id)}
+                        showApprove
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-            ) : (
+            )}
+
+            {activeTab === "approved" && (
               <div className="space-y-4">
-                {pending.map((b) => (
+                {approved.map((b) => (
                   <BusinessAdminCard
                     key={b.id}
                     business={b}
                     lang={lang}
-                    onApprove={() => approve(b.id)}
-                    onReject={() => reject(b.id)}
                     onDelete={() => remove(b.id)}
-                    showApprove
                   />
                 ))}
               </div>
             )}
-          </div>
-        )}
 
-        {/* Approved */}
-        {activeTab === "approved" && (
-          <div className="space-y-4">
-            {approved.map((b) => (
-              <BusinessAdminCard
-                key={b.id}
-                business={b}
-                lang={lang}
-                onDelete={() => remove(b.id)}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Feedbacks */}
-        {activeTab === "feedbacks" && (
-          <div className="space-y-4">
-            {FEEDBACKS.map((f) => (
-              <div key={f.id} className="bg-card border border-border rounded-2xl p-5">
-                <p className="text-foreground mb-2 leading-relaxed">"{f.message}"</p>
-                <p className="text-xs text-muted-foreground">{new Date(f.createdAt).toLocaleDateString()}</p>
+            {activeTab === "feedbacks" && (
+              <div className="space-y-4">
+                {feedbacks.map((f) => (
+                  <div key={f.id} className="bg-card border border-border rounded-2xl p-5">
+                    <p className="text-foreground mb-2 leading-relaxed">"{f.message}"</p>
+                    <p className="text-xs text-muted-foreground">{new Date(f.created_at).toLocaleDateString()}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -134,7 +136,7 @@ export default function Admin() {
 }
 
 interface BusinessAdminCardProps {
-  business: Business;
+  business: BusinessRow;
   lang: Lang;
   onApprove?: () => void;
   onReject?: () => void;
@@ -160,7 +162,7 @@ function BusinessAdminCard({ business, lang, onApprove, onReject, onDelete, show
               <span className="text-muted-foreground">·</span>
               <span className="text-xs text-muted-foreground">{business.city}</span>
               <span className="text-muted-foreground">·</span>
-              <span className="text-xs text-muted-foreground">{new Date(business.createdAt).toLocaleDateString()}</span>
+              <span className="text-xs text-muted-foreground">{new Date(business.created_at).toLocaleDateString()}</span>
             </div>
           </div>
         </div>

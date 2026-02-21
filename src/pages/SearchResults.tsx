@@ -5,7 +5,8 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { BusinessCard } from "@/components/BusinessCard";
 import { Lang, t } from "@/lib/i18n";
-import { MOCK_BUSINESSES, CATEGORIES, ONTARIO_CITIES, CategoryKey } from "@/lib/data";
+import { CATEGORIES, ONTARIO_CITIES } from "@/lib/data";
+import { useApprovedBusinesses } from "@/hooks/use-businesses";
 
 export default function SearchResults() {
   const [lang, setLang] = useState<Lang>("pt");
@@ -19,6 +20,7 @@ export default function SearchResults() {
   const [sortBy, setSortBy] = useState("relevance");
 
   const navigate = useNavigate();
+  const { data: businesses = [], isLoading } = useApprovedBusinesses();
 
   useEffect(() => {
     setQuery(searchParams.get("q") ?? "");
@@ -35,8 +37,7 @@ export default function SearchResults() {
   };
 
   const results = useMemo(() => {
-    return MOCK_BUSINESSES.filter((b) => {
-      if (b.status !== "approved") return false;
+    return businesses.filter((b) => {
       const q = query.toLowerCase();
       const matchQuery = !q || b.name.toLowerCase().includes(q) || b.description.toLowerCase().includes(q) || b.category.includes(q);
       const matchCat = !selectedCategory || b.category === selectedCategory;
@@ -44,10 +45,10 @@ export default function SearchResults() {
       const matchType = !selectedType || b.type === selectedType;
       return matchQuery && matchCat && matchCity && matchType;
     }).sort((a, b) => {
-      if (sortBy === "recent") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (sortBy === "recent") return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       return 0;
     });
-  }, [query, selectedCategory, selectedCity, selectedType, sortBy]);
+  }, [businesses, query, selectedCategory, selectedCity, selectedType, sortBy]);
 
   const clearFilters = () => {
     setSelectedCategory("");
@@ -207,7 +208,12 @@ export default function SearchResults() {
               </h2>
             </div>
 
-            {results.length === 0 ? (
+            {isLoading ? (
+              <div className="text-center py-20">
+                <div className="text-5xl mb-4 animate-pulse">⏳</div>
+                <p className="text-muted-foreground">{lang === "pt" ? "Carregando..." : "Loading..."}</p>
+              </div>
+            ) : results.length === 0 ? (
               <div className="text-center py-20">
                 <div className="text-5xl mb-4">🔍</div>
                 <p className="font-display font-semibold text-xl text-foreground mb-2">

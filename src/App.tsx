@@ -8,6 +8,7 @@ import SearchResults from "./pages/SearchResults";
 import BusinessDetail from "./pages/BusinessDetail";
 import RegisterBusiness from "./pages/RegisterBusiness";
 import Admin from "./pages/Admin";
+import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/negocio/:id" element={<BusinessDetail />} />
           <Route path="/cadastrar" element={<RegisterBusiness />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/privacidade" element={<Privacy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

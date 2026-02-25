@@ -8,11 +8,32 @@ export const translations = {
     nav_admin: "Admin",
 
     // Hero
-    hero_title: "Encontre serviços\nbrasileiros em Ontário",
-    hero_subtitle: "A comunidade brasileira reunida em um só lugar. Encontre profissionais, restaurantes, clínicas e muito mais.",
-    search_what: "O que você procura?",
+    hero_title: "Conectando a comunidade\nbrasileira em Ontário.",
+    hero_subtitle: "Encontre negócios e serviços oferecidos por brasileiros em um só lugar.",
+    search_what: "Ex: Restaurante, Dentista, Babá...",
     search_where: "Onde? (cidade em Ontário)",
-    search_btn: "Buscar",
+    search_btn: "Buscar agora",
+    hero_cta_register: "Cadastrar meu negócio",
+
+    // How it works
+    how_title: "Como funciona",
+    how_step1_title: "Busque",
+    how_step1_desc: "Pesquise por categoria, serviço ou cidade em Ontário.",
+    how_step2_title: "Encontre",
+    how_step2_desc: "Veja perfis detalhados com informações de contato.",
+    how_step3_title: "Conecte-se",
+    how_step3_desc: "Entre em contato direto pelo WhatsApp, telefone ou e-mail.",
+
+    // Why BRConect
+    why_title: "Por que usar o BRConect?",
+    why_community_title: "Comunidade",
+    why_community_desc: "Rede exclusiva de brasileiros em Ontário, feita pela comunidade.",
+    why_trust_title: "Confiança",
+    why_trust_desc: "Todos os cadastros são revisados pela nossa equipe antes de publicar.",
+    why_central_title: "Centralização",
+    why_central_desc: "Tudo em um só lugar. Chega de procurar em grupos dispersos.",
+    why_easy_title: "Facilidade",
+    why_easy_desc: "Interface simples e intuitiva. Encontre o que precisa em segundos.",
 
     // Categories
     categories_title: "Explorar por categoria",
@@ -31,14 +52,19 @@ export const translations = {
     cta_desc: "Cadastre-se gratuitamente e seja encontrado pela comunidade brasileira em Ontário.",
     cta_btn: "Cadastrar agora — é grátis",
 
+    // About
+    about_title: "Quem Somos Nós",
+    about_p1: "O BRConect conecta a comunidade brasileira em Ontário.",
+    about_p2: "Centralizamos negócios e serviços em um único lugar, facilitando o acesso a profissionais confiáveis e fortalecendo nossa rede local.",
+
     // Footer
     footer_feedback: "Envie sua sugestão para melhorar o BRConect",
     footer_send: "Enviar",
     footer_about: "Sobre",
     footer_contact: "Contato",
-    footer_terms: "Termos",
+    footer_terms: "Termos de Uso",
     footer_privacy: "Privacidade",
-    footer_rights: "© 2024 BRConect. Todos os direitos reservados.",
+    footer_rights: "© 2025 BRConect. Todos os direitos reservados.",
     footer_tagline: "Conectando a comunidade brasileira em Ontário, Canadá.",
 
     // Results
@@ -55,7 +81,7 @@ export const translations = {
     all_types: "Todos os tipos",
     type_company: "Empresa",
     type_freelancer: "Autônomo",
-    view_more: "Ver mais",
+    view_more: "Ver perfil",
     no_results: "Nenhum resultado encontrado.",
     no_results_desc: "Tente buscar por outro termo ou categoria.",
     back: "Voltar",
@@ -84,8 +110,8 @@ export const translations = {
     form_email: "E-mail",
     form_photo: "Foto ou logo",
     form_save: "Enviar para aprovação",
-    form_success: "Seu negócio foi enviado para aprovação!",
-    form_success_desc: "Nossa equipe irá analisar e publicar em breve.",
+    form_success: "Recebemos seu cadastro!",
+    form_success_desc: "Nossa equipe irá revisar em breve. Você receberá uma notificação quando for aprovado.",
     back_home: "Voltar para o início",
     select_category: "Selecione uma categoria",
     select_city: "Selecione uma cidade",
@@ -101,6 +127,9 @@ export const translations = {
     edit: "Editar",
     delete: "Excluir",
     no_pending: "Nenhum cadastro pendente.",
+
+    // Privacy
+    privacy_title: "Política de Privacidade",
   },
   en: {
     // Nav
@@ -109,11 +138,32 @@ export const translations = {
     nav_admin: "Admin",
 
     // Hero
-    hero_title: "Find Brazilian\nservices in Ontario",
-    hero_subtitle: "The Brazilian community gathered in one place. Find professionals, restaurants, clinics, and much more.",
-    search_what: "What are you looking for?",
+    hero_title: "Connecting the Brazilian\ncommunity in Ontario.",
+    hero_subtitle: "Find businesses and services offered by Brazilians in one place.",
+    search_what: "E.g.: Restaurant, Dentist, Nanny...",
     search_where: "Where? (city in Ontario)",
-    search_btn: "Search",
+    search_btn: "Search now",
+    hero_cta_register: "List my business",
+
+    // How it works
+    how_title: "How it works",
+    how_step1_title: "Search",
+    how_step1_desc: "Browse by category, service, or city in Ontario.",
+    how_step2_title: "Find",
+    how_step2_desc: "See detailed profiles with contact information.",
+    how_step3_title: "Connect",
+    how_step3_desc: "Get in touch directly via WhatsApp, phone, or email.",
+
+    // Why BRConect
+    why_title: "Why use BRConect?",
+    why_community_title: "Community",
+    why_community_desc: "An exclusive network of Brazilians in Ontario, built by the community.",
+    why_trust_title: "Trust",
+    why_trust_desc: "All listings are reviewed by our team before publishing.",
+    why_central_title: "Centralization",
+    why_central_desc: "Everything in one place. No more searching scattered groups.",
+    why_easy_title: "Ease of use",
+    why_easy_desc: "Simple and intuitive interface. Find what you need in seconds.",
 
     // Categories
     categories_title: "Browse by category",
@@ -132,14 +182,19 @@ export const translations = {
     cta_desc: "Sign up for free and be found by the Brazilian community in Ontario.",
     cta_btn: "Register now — it's free",
 
+    // About
+    about_title: "Who We Are",
+    about_p1: "BRConect connects the Brazilian community in Ontario.",
+    about_p2: "We centralize businesses and services in one place, making it easy to access trusted professionals and strengthening our local network.",
+
     // Footer
     footer_feedback: "Send your suggestion to improve BRConect",
     footer_send: "Send",
     footer_about: "About",
     footer_contact: "Contact",
-    footer_terms: "Terms",
+    footer_terms: "Terms of Use",
     footer_privacy: "Privacy",
-    footer_rights: "© 2024 BRConect. All rights reserved.",
+    footer_rights: "© 2025 BRConect. All rights reserved.",
     footer_tagline: "Connecting the Brazilian community in Ontario, Canada.",
 
     // Results
@@ -156,7 +211,7 @@ export const translations = {
     all_types: "All types",
     type_company: "Company",
     type_freelancer: "Freelancer",
-    view_more: "View more",
+    view_more: "View profile",
     no_results: "No results found.",
     no_results_desc: "Try searching with a different term or category.",
     back: "Back",
@@ -185,8 +240,8 @@ export const translations = {
     form_email: "Email",
     form_photo: "Photo or logo",
     form_save: "Submit for approval",
-    form_success: "Your business was submitted for approval!",
-    form_success_desc: "Our team will review and publish it soon.",
+    form_success: "We received your listing!",
+    form_success_desc: "Our team will review it shortly. You'll be notified when it's approved.",
     back_home: "Back to home",
     select_category: "Select a category",
     select_city: "Select a city",
@@ -202,6 +257,9 @@ export const translations = {
     edit: "Edit",
     delete: "Delete",
     no_pending: "No pending listings.",
+
+    // Privacy
+    privacy_title: "Privacy Policy",
   },
 };
 

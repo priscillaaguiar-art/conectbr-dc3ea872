@@ -1,22 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, MapPin, ArrowRight } from "lucide-react";
+import { Search, MapPin, ArrowRight, Heart, Users, Handshake } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Lang, t } from "@/lib/i18n";
 import { CATEGORIES } from "@/lib/data";
-
-const CATEGORY_BG: Record<string, string> = {
-  food: "from-amber-50 to-orange-50 border-amber-100 hover:border-amber-200",
-  services: "from-blue-50 to-cyan-50 border-blue-100 hover:border-blue-200",
-  beauty: "from-pink-50 to-rose-50 border-pink-100 hover:border-pink-200",
-  health: "from-green-50 to-emerald-50 border-green-100 hover:border-green-200",
-  products: "from-orange-50 to-yellow-50 border-orange-100 hover:border-orange-200",
-  professionals: "from-indigo-50 to-violet-50 border-indigo-100 hover:border-indigo-200",
-  transport: "from-sky-50 to-blue-50 border-sky-100 hover:border-sky-200",
-  immigration: "from-teal-50 to-green-50 border-teal-100 hover:border-teal-200",
-  others: "from-gray-50 to-slate-50 border-gray-100 hover:border-gray-200",
-};
 
 export default function Index() {
   const [lang, setLang] = useState<Lang>("pt");
@@ -41,12 +29,10 @@ export default function Index() {
 
       {/* Hero */}
       <section className="gradient-hero py-20 md:py-28 px-4 relative overflow-hidden">
-        {/* Decorative circles */}
         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-primary-foreground/5 pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-accent/10 pointer-events-none" />
 
         <div className="container mx-auto relative z-10">
-          {/* Flags badge */}
           <div className="inline-flex items-center gap-2 bg-primary-foreground/10 border border-primary-foreground/20 rounded-full px-4 py-2 mb-6 backdrop-blur-sm">
             <span className="text-lg">🇧🇷</span>
             <span className="text-xs font-medium text-primary-foreground/80 uppercase tracking-wide">
@@ -109,19 +95,19 @@ export default function Index() {
       </section>
 
       {/* Categories */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="flex items-center justify-between mb-8">
+      <section className="container mx-auto px-4 py-20">
+        <div className="flex items-center justify-between mb-10">
           <h2 className="section-title">{t(lang, "categories_title")}</h2>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.key}
               onClick={() => handleCategoryClick(cat.key)}
-              className={`group bg-gradient-to-br ${CATEGORY_BG[cat.key]} border rounded-2xl p-5 text-center transition-all duration-200 hover:-translate-y-1 hover:shadow-card`}
+              className="group bg-primary rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:bg-primary-light shadow-card hover:shadow-lg"
             >
-              <div className="text-3xl mb-2">{cat.emoji}</div>
-              <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+              <div className="text-3xl mb-3 transition-transform duration-300 group-hover:scale-110">{cat.emoji}</div>
+              <span className="text-sm font-semibold text-primary-foreground transition-colors">
                 {t(lang, cat.labelKey as any)}
               </span>
             </button>
@@ -130,15 +116,15 @@ export default function Index() {
       </section>
 
       {/* Featured businesses teaser */}
-      <section className="bg-muted/50 py-12 px-4">
+      <section className="bg-muted/50 py-16 px-4">
         <div className="container mx-auto text-center">
           <p className="text-muted-foreground text-sm mb-3 font-medium uppercase tracking-wide">
             {lang === "pt" ? "Explore a plataforma" : "Explore the platform"}
           </p>
-          <h2 className="section-title mb-3">
+          <h2 className="section-title mb-4">
             {lang === "pt" ? "Encontre o que você precisa" : "Find what you need"}
           </h2>
-          <p className="text-muted-foreground max-w-md mx-auto mb-6">
+          <p className="text-muted-foreground max-w-md mx-auto mb-8">
             {lang === "pt"
               ? "Mais de 9 categorias de negócios e serviços brasileiros em toda Ontário."
               : "Over 9 categories of Brazilian businesses and services across Ontario."}
@@ -154,7 +140,7 @@ export default function Index() {
       </section>
 
       {/* CTA */}
-      <section className="container mx-auto px-4 py-16">
+      <section className="container mx-auto px-4 py-20">
         <div className="gradient-hero rounded-3xl p-10 md:p-14 relative overflow-hidden">
           <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-accent/20" />
           <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-primary-foreground/5" />
@@ -172,6 +158,52 @@ export default function Index() {
               {t(lang, "cta_btn")}
               <ArrowRight className="w-5 h-5" />
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Quem Somos Nós */}
+      <section className="py-20 px-4" style={{ background: "hsl(40 20% 96%)" }}>
+        <div className="container mx-auto max-w-3xl">
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <div className="flex -space-x-2">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Users className="w-5 h-5 text-primary" />
+              </div>
+              <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
+                <Handshake className="w-5 h-5 text-accent" />
+              </div>
+              <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+                <Heart className="w-5 h-5 text-secondary" />
+              </div>
+            </div>
+          </div>
+
+          <h2 className="section-title text-center text-primary mb-8">
+            {lang === "pt" ? "Quem Somos Nós?" : "Who Are We?"}
+          </h2>
+
+          <div className="space-y-5 text-muted-foreground leading-relaxed text-center text-base md:text-lg">
+            <p>
+              {lang === "pt"
+                ? "O BRConect nasceu da necessidade de organizar e fortalecer a comunidade brasileira em Ontário."
+                : "BRConect was born from the need to organize and strengthen the Brazilian community in Ontario."}
+            </p>
+            <p>
+              {lang === "pt"
+                ? "Sabemos como é desafiador chegar em um novo país e não saber por onde começar. Informações espalhadas em grupos, contatos difíceis de encontrar e a insegurança de não conhecer quem está oferecendo um serviço."
+                : "We know how challenging it is to arrive in a new country and not know where to start. Information scattered across groups, contacts hard to find, and the uncertainty of not knowing who is offering a service."}
+            </p>
+            <p>
+              {lang === "pt"
+                ? "Criamos o BRConect para centralizar, facilitar e dar visibilidade aos brasileiros que empreendem e trabalham aqui."
+                : "We created BRConect to centralize, facilitate, and give visibility to Brazilians who work and build businesses here."}
+            </p>
+            <p className="font-medium text-foreground">
+              {lang === "pt"
+                ? "Mais do que um diretório, somos uma ponte entre quem procura e quem oferece. Uma rede construída com confiança, comunidade e propósito."
+                : "More than a directory, we are a bridge between those who seek and those who offer. A network built on trust, community, and purpose."}
+            </p>
           </div>
         </div>
       </section>

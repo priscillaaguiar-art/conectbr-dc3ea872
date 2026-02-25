@@ -142,10 +142,10 @@ export function useFeedbacks() {
 export function useInsertFeedback() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (message: string) => {
+    mutationFn: async (data: { name: string | null; email: string; message: string }) => {
       const { error } = await supabase
         .from("feedbacks")
-        .insert({ message });
+        .insert({ name: data.name, email: data.email, message: data.message });
       if (error) throw error;
     },
     onSuccess: () => {

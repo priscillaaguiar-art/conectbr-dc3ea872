@@ -4,7 +4,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
 
-/* BRConect Design System — muted, professional, bilingual community platform */
+/* BRConect Design System — verde musgo, sofisticado, fosco */
 
 @layer base {
   :root {
@@ -18,17 +18,17 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 12%;
 
-    /* Azul petróleo — primary brand */
-    --primary: 198 52% 28%;
+    /* Verde musgo — primary brand */
+    --primary: 150 30% 22%;
     --primary-foreground: 40 20% 97%;
-    --primary-light: 198 52% 38%;
-    --primary-muted: 198 30% 90%;
+    --primary-light: 150 28% 32%;
+    --primary-muted: 150 18% 90%;
 
-    /* Verde musgo — secondary */
-    --secondary: 142 28% 32%;
+    /* Verde musgo claro — secondary */
+    --secondary: 148 24% 28%;
     --secondary-foreground: 40 20% 97%;
-    --secondary-light: 142 28% 42%;
-    --secondary-muted: 142 20% 92%;
+    --secondary-light: 148 24% 38%;
+    --secondary-muted: 148 16% 92%;
 
     /* Amarelo mostarda — accent */
     --accent: 40 72% 48%;
@@ -44,21 +44,21 @@
 
     --border: 220 14% 88%;
     --input: 220 14% 88%;
-    --ring: 198 52% 28%;
+    --ring: 150 30% 22%;
 
     --radius: 0.75rem;
 
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(198 52% 22%) 0%, hsl(198 52% 34%) 50%, hsl(142 28% 28%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(150 30% 16%) 0%, hsl(150 28% 26%) 50%, hsl(148 24% 22%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(40 72% 48%) 0%, hsl(40 72% 58%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 12% 98%) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 3px 0 hsl(220 15% 12% / 0.08), 0 1px 2px -1px hsl(220 15% 12% / 0.06);
-    --shadow-md: 0 4px 12px -2px hsl(220 15% 12% / 0.1), 0 2px 4px -2px hsl(220 15% 12% / 0.06);
-    --shadow-lg: 0 12px 32px -4px hsl(220 15% 12% / 0.14), 0 4px 8px -4px hsl(220 15% 12% / 0.08);
-    --shadow-primary: 0 8px 24px -4px hsl(198 52% 28% / 0.35);
-    --shadow-accent: 0 8px 24px -4px hsl(40 72% 48% / 0.3);
+    --shadow-sm: 0 1px 3px 0 hsl(220 15% 12% / 0.06), 0 1px 2px -1px hsl(220 15% 12% / 0.04);
+    --shadow-md: 0 4px 12px -2px hsl(220 15% 12% / 0.08), 0 2px 4px -2px hsl(220 15% 12% / 0.05);
+    --shadow-lg: 0 12px 32px -4px hsl(220 15% 12% / 0.12), 0 4px 8px -4px hsl(220 15% 12% / 0.06);
+    --shadow-primary: 0 8px 24px -4px hsl(150 30% 22% / 0.3);
+    --shadow-accent: 0 8px 24px -4px hsl(40 72% 48% / 0.25);
 
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
@@ -68,7 +68,7 @@
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 150 30% 22%;
   }
 }
 

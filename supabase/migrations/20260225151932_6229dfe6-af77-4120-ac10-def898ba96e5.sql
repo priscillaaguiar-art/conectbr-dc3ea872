@@ -1,0 +1,4 @@
+
+ALTER TABLE public.feedbacks
+ADD COLUMN name TEXT,
+ADD COLUMN email TEXT NOT NULL DEFAULT '';

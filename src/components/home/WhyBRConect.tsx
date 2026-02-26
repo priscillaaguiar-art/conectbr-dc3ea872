@@ -14,7 +14,7 @@ export function WhyBRConect({ lang }: Props) {
   return (
     <section className="container mx-auto px-4 py-24">
       <div className="text-center mb-16">
-        <p className="text-accent text-sm font-semibold uppercase tracking-wider mb-3">
+        <p className="text-amarelo text-sm font-semibold uppercase tracking-wider mb-3">
           {lang === "pt" ? "Nossos diferenciais" : "Our differentials"}
         </p>
         <h2 className="section-title text-3xl md:text-4xl">{t(lang, "why_title")}</h2>
@@ -24,14 +24,14 @@ export function WhyBRConect({ lang }: Props) {
         {REASONS.map((r, i) => (
           <div
             key={r.titleKey}
-            className="bg-card border border-border rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group animate-fade-up"
+            className="bg-white border border-border rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-verde/20 group animate-fade-up"
             style={{ animationDelay: `${i * 0.1}s` }}
           >
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-              <r.icon className="w-6 h-6 text-primary" />
+            <div className="w-12 h-12 rounded-xl bg-verde-light flex items-center justify-center mx-auto mb-4 group-hover:bg-verde/10 transition-colors">
+              <r.icon className="w-6 h-6 text-verde" />
             </div>
-            <h3 className="font-display font-bold text-base text-foreground mb-2">{t(lang, r.titleKey)}</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">{t(lang, r.descKey)}</p>
+            <h3 className="font-display font-bold text-base text-dark mb-2">{t(lang, r.titleKey)}</h3>
+            <p className="text-mid text-sm leading-relaxed">{t(lang, r.descKey)}</p>
           </div>
         ))}
       </div>

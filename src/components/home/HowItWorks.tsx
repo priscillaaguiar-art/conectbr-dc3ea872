@@ -13,7 +13,7 @@ export function HowItWorks({ lang }: Props) {
   return (
     <section className="container mx-auto px-4 py-24">
       <div className="text-center mb-16">
-        <p className="text-accent text-sm font-semibold uppercase tracking-wider mb-3">
+        <p className="text-amarelo text-sm font-semibold uppercase tracking-wider mb-3">
           {lang === "pt" ? "Simples e rápido" : "Simple & fast"}
         </p>
         <h2 className="section-title text-3xl md:text-4xl">{t(lang, "how_title")}</h2>
@@ -27,15 +27,15 @@ export function HowItWorks({ lang }: Props) {
             style={{ animationDelay: `${i * 0.15}s` }}
           >
             <div className="relative mb-6 mx-auto w-fit">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
-                <step.icon className="w-7 h-7 text-primary" />
+              <div className="w-16 h-16 rounded-2xl bg-verde-light flex items-center justify-center group-hover:bg-verde/10 transition-colors duration-300">
+                <step.icon className="w-7 h-7 text-verde" />
               </div>
-              <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-accent text-accent-foreground text-xs font-bold flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-amarelo text-dark text-xs font-bold flex items-center justify-center">
                 {step.num}
               </span>
             </div>
-            <h3 className="font-display font-bold text-lg text-foreground mb-2">{t(lang, step.titleKey)}</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">{t(lang, step.descKey)}</p>
+            <h3 className="font-display font-bold text-lg text-dark mb-2">{t(lang, step.titleKey)}</h3>
+            <p className="text-mid text-sm leading-relaxed max-w-xs mx-auto">{t(lang, step.descKey)}</p>
           </div>
         ))}
       </div>

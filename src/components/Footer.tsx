@@ -52,19 +52,19 @@ export function Footer({ lang }: FooterProps) {
   };
 
   return (
-    <footer className="bg-foreground text-primary-foreground">
+    <footer className="bg-dark text-white">
       {/* Feedback section */}
-      <div className="border-b border-primary-foreground/10">
+      <div className="border-b border-white/10">
         <div className="container mx-auto px-4 py-14">
           <div className="max-w-lg">
-            <h3 className="font-display font-bold text-xl text-primary-foreground mb-2">
+            <h3 className="font-display font-bold text-xl text-white mb-2">
               {lang === "pt" ? "Envie uma sugestão" : "Send a suggestion"}
             </h3>
-            <p className="text-sm text-primary-foreground/60 mb-8">{t(lang, "footer_feedback")}</p>
+            <p className="text-sm text-white/50 mb-8">{t(lang, "footer_feedback")}</p>
 
             {sent ? (
-              <div className="bg-accent/20 border border-accent/30 rounded-2xl px-6 py-5">
-                <p className="text-accent font-medium text-sm">
+              <div className="bg-amarelo/20 border border-amarelo/30 rounded-2xl px-6 py-5">
+                <p className="text-amarelo font-medium text-sm">
                   {lang === "pt"
                     ? "Obrigado pela sua sugestão! Vamos analisar com carinho. 💛"
                     : "Thank you for your suggestion! We'll review it carefully. 💛"}
@@ -77,7 +77,7 @@ export function Footer({ lang }: FooterProps) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={lang === "pt" ? "Seu nome (opcional)" : "Your name (optional)"}
-                  className="bg-primary-foreground/10 border border-primary-foreground/15 rounded-xl px-4 py-3 text-sm text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:border-accent/60 transition-colors"
+                  className="bg-white/10 border border-white/15 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-amarelo/60 transition-colors"
                   maxLength={100}
                 />
                 <div>
@@ -86,10 +86,10 @@ export function Footer({ lang }: FooterProps) {
                     value={email}
                     onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
                     placeholder={lang === "pt" ? "Seu e-mail *" : "Your email *"}
-                    className={`w-full bg-primary-foreground/10 border rounded-xl px-4 py-3 text-sm text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none transition-colors ${emailError ? "border-destructive" : "border-primary-foreground/15 focus:border-accent/60"}`}
+                    className={`w-full bg-white/10 border rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none transition-colors ${emailError ? "border-red-500" : "border-white/15 focus:border-amarelo/60"}`}
                     maxLength={255}
                   />
-                  {emailError && <p className="text-destructive text-xs mt-1.5">{emailError}</p>}
+                  {emailError && <p className="text-red-400 text-xs mt-1.5">{emailError}</p>}
                 </div>
                 <div>
                   <textarea
@@ -97,10 +97,10 @@ export function Footer({ lang }: FooterProps) {
                     onChange={(e) => { setMessage(e.target.value); setMessageError(""); }}
                     placeholder={lang === "pt" ? "Sua mensagem *" : "Your message *"}
                     rows={3}
-                    className={`w-full bg-primary-foreground/10 border rounded-xl px-4 py-3 text-sm text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none transition-colors resize-none ${messageError ? "border-destructive" : "border-primary-foreground/15 focus:border-accent/60"}`}
+                    className={`w-full bg-white/10 border rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none transition-colors resize-none ${messageError ? "border-red-500" : "border-white/15 focus:border-amarelo/60"}`}
                     maxLength={1000}
                   />
-                  {messageError && <p className="text-destructive text-xs mt-1.5">{messageError}</p>}
+                  {messageError && <p className="text-red-400 text-xs mt-1.5">{messageError}</p>}
                 </div>
                 <button
                   onClick={handleSend}
@@ -124,26 +124,26 @@ export function Footer({ lang }: FooterProps) {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-9 h-9 rounded-xl gradient-hero flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-xs">BR</span>
+              <div className="w-9 h-9 rounded-xl bg-verde flex items-center justify-center">
+                <span className="text-white font-display font-bold text-xs">BR</span>
               </div>
               <span className="font-display font-bold text-xl">
-                BR<span className="text-accent">Conect</span>
+                BR<span className="text-amarelo">Conect</span>
               </span>
             </div>
-            <p className="text-sm text-primary-foreground/50 max-w-xs leading-relaxed">{t(lang, "footer_tagline")}</p>
+            <p className="text-sm text-white/50 max-w-xs leading-relaxed">{t(lang, "footer_tagline")}</p>
           </div>
 
           {/* Links */}
           <div>
-            <h4 className="font-semibold text-sm text-primary-foreground/80 mb-4 uppercase tracking-wider">
+            <h4 className="font-semibold text-sm text-white/80 mb-4 uppercase tracking-wider">
               {lang === "pt" ? "Plataforma" : "Platform"}
             </h4>
-            <nav className="flex flex-col gap-2.5 text-sm text-primary-foreground/60">
-              <Link to="/busca" className="hover:text-accent transition-colors w-fit">
+            <nav className="flex flex-col gap-2.5 text-sm text-white/50">
+              <Link to="/busca" className="hover:text-amarelo transition-colors w-fit">
                 {lang === "pt" ? "Buscar negócios" : "Search businesses"}
               </Link>
-              <Link to="/cadastrar" className="hover:text-accent transition-colors w-fit">
+              <Link to="/cadastrar" className="hover:text-amarelo transition-colors w-fit">
                 {lang === "pt" ? "Cadastrar negócio" : "List business"}
               </Link>
             </nav>
@@ -151,24 +151,24 @@ export function Footer({ lang }: FooterProps) {
 
           {/* Legal */}
           <div>
-            <h4 className="font-semibold text-sm text-primary-foreground/80 mb-4 uppercase tracking-wider">
+            <h4 className="font-semibold text-sm text-white/80 mb-4 uppercase tracking-wider">
               {lang === "pt" ? "Legal" : "Legal"}
             </h4>
-            <nav className="flex flex-col gap-2.5 text-sm text-primary-foreground/60">
-              <Link to="/privacidade" className="hover:text-accent transition-colors w-fit">
+            <nav className="flex flex-col gap-2.5 text-sm text-white/50">
+              <Link to="/privacidade" className="hover:text-amarelo transition-colors w-fit">
                 {t(lang, "footer_privacy")}
               </Link>
-              <a href="#" className="hover:text-accent transition-colors w-fit">
+              <a href="#" className="hover:text-amarelo transition-colors w-fit">
                 {t(lang, "footer_terms")}
               </a>
-              <a href="#" className="hover:text-accent transition-colors w-fit">
+              <a href="#" className="hover:text-amarelo transition-colors w-fit">
                 {t(lang, "footer_contact")}
               </a>
             </nav>
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-primary-foreground/10 text-center text-xs text-primary-foreground/40">
+        <div className="mt-10 pt-6 border-t border-white/10 text-center text-xs text-white/40">
           {t(lang, "footer_rights")}
         </div>
       </div>

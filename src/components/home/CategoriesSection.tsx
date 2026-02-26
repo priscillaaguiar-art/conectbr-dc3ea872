@@ -8,10 +8,10 @@ export function CategoriesSection({ lang }: Props) {
   const navigate = useNavigate();
 
   return (
-    <section className="bg-muted/40 py-24 px-4">
+    <section className="bg-verde-muted py-24 px-4">
       <div className="container mx-auto">
         <div className="text-center mb-14">
-          <p className="text-accent text-sm font-semibold uppercase tracking-wider mb-3">
+          <p className="text-amarelo text-sm font-semibold uppercase tracking-wider mb-3">
             {lang === "pt" ? "Navegue por área" : "Browse by area"}
           </p>
           <h2 className="section-title text-3xl md:text-4xl">{t(lang, "categories_title")}</h2>
@@ -22,11 +22,11 @@ export function CategoriesSection({ lang }: Props) {
             <button
               key={cat.key}
               onClick={() => navigate(`/busca?categoria=${cat.key}`)}
-              className="group bg-primary rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:bg-primary-light shadow-card hover:shadow-lg animate-fade-up"
+              className="group bg-verde rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:bg-verde-mid shadow-card hover:shadow-lg animate-fade-up"
               style={{ animationDelay: `${i * 0.05}s` }}
             >
               <div className="text-3xl mb-3 transition-transform duration-300 group-hover:scale-110">{cat.emoji}</div>
-              <span className="text-sm font-semibold text-primary-foreground">
+              <span className="text-sm font-semibold text-white">
                 {t(lang, cat.labelKey as any)}
               </span>
             </button>

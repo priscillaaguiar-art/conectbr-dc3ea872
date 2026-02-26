@@ -1,14 +1,14 @@
-import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, MapPin, MessageCircle, Instagram, Phone, Mail, ExternalLink } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Lang, t } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
 import { CATEGORIES } from "@/lib/data";
 import { useBusinessById } from "@/hooks/use-businesses";
+import { useLang } from "@/lib/LangContext";
 
 export default function BusinessDetail() {
-  const [lang, setLang] = useState<Lang>("pt");
+  const { lang, setLang } = useLang();
   const { id } = useParams();
   const navigate = useNavigate();
 

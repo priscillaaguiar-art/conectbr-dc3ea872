@@ -3,15 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Upload, ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Lang, t } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
 import { CATEGORIES, ONTARIO_CITIES } from "@/lib/data";
 import { useInsertBusiness } from "@/hooks/use-businesses";
+import { useLang } from "@/lib/LangContext";
 
 const STEPS_PT = ["Informações", "Contato", "Revisão"];
 const STEPS_EN = ["Information", "Contact", "Review"];
 
 export default function RegisterBusiness() {
-  const [lang, setLang] = useState<Lang>("pt");
+  const { lang, setLang } = useLang();
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const [step, setStep] = useState(0);
@@ -274,7 +275,7 @@ export default function RegisterBusiness() {
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <div><span className="text-muted-foreground">{t(lang, "form_name")}:</span> <span className="font-medium text-foreground">{form.name}</span></div>
-                  <div><span className="text-muted-foreground">{t(lang, "form_category")}:</span> <span className="font-medium text-foreground">{CATEGORIES.find(c => c.key === form.category)?.emoji} {form.category}</span></div>
+                  <div><span className="text-muted-foreground">{t(lang, "form_category")}:</span> <span className="font-medium text-foreground">{(() => { const sc = CATEGORIES.find((c) => c.key === form.category); return sc ? `${sc.emoji} ${t(lang, sc.labelKey as any)}` : "-"; })()}</span></div>
                   <div><span className="text-muted-foreground">{t(lang, "form_city")}:</span> <span className="font-medium text-foreground">{form.city}</span></div>
                   {form.whatsapp && <div><span className="text-muted-foreground">WhatsApp:</span> <span className="font-medium text-foreground">{form.whatsapp}</span></div>}
                   {form.instagram && <div><span className="text-muted-foreground">Instagram:</span> <span className="font-medium text-foreground">{form.instagram}</span></div>}

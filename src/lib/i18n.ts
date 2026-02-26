@@ -64,7 +64,7 @@ export const translations = {
     footer_contact: "Contato",
     footer_terms: "Termos de Uso",
     footer_privacy: "Privacidade",
-    footer_rights: "© 2025 BRConect. Todos os direitos reservados.",
+    footer_rights: "© 2026 BRConect. Todos os direitos reservados.",
     footer_tagline: "Conectando a comunidade brasileira em Ontário, Canadá.",
 
     // Results

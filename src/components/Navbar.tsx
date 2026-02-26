@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Globe, Plus, LogIn, ChevronDown } from "lucide-react";
+import { Globe, Plus, LogIn, ChevronDown, Menu, X } from "lucide-react";
 import { Lang } from "@/lib/i18n";
 
 interface NavbarProps {
@@ -10,7 +10,19 @@ interface NavbarProps {
 
 export function Navbar({ lang, onLangChange }: NavbarProps) {
   const [langOpen, setLangOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
+  const langRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border">
@@ -25,10 +37,10 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
           </span>
         </Link>
 
-        {/* Right actions */}
-        <div className="flex items-center gap-2">
+        {/* Desktop actions */}
+        <div className="hidden sm:flex items-center gap-2">
           {/* Language toggle */}
-          <div className="relative">
+          <div className="relative" ref={langRef}>
             <button
               onClick={() => setLangOpen(!langOpen)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
@@ -55,7 +67,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
           {/* Register button */}
           <button
             onClick={() => navigate("/cadastrar")}
-            className="hidden sm:flex items-center gap-1.5 btn-accent text-sm py-2 px-4"
+            className="flex items-center gap-1.5 btn-accent text-sm py-2 px-4"
           >
             <Plus className="w-4 h-4" />
             <span>{lang === "pt" ? "Cadastrar negócio" : "List business"}</span>
@@ -67,10 +79,53 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted border border-border transition-all"
           >
             <LogIn className="w-4 h-4" />
-            <span className="hidden sm:inline">{lang === "pt" ? "Admin" : "Admin"}</span>
+            <span>Admin</span>
           </button>
         </div>
+
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="sm:hidden flex items-center justify-center w-10 h-10 rounded-xl text-foreground hover:bg-muted transition-colors"
+          aria-label="Menu"
+        >
+          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
       </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="sm:hidden border-t border-border bg-card px-4 py-4 space-y-3 animate-fade-in">
+          {/* Language */}
+          <div className="flex gap-2">
+            {(["pt", "en"] as Lang[]).map((l) => (
+              <button
+                key={l}
+                onClick={() => { onLangChange(l); setMobileOpen(false); }}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${lang === l ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}
+              >
+                {l === "pt" ? "🇧🇷 PT" : "🇨🇦 EN"}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => { navigate("/cadastrar"); setMobileOpen(false); }}
+            className="w-full flex items-center justify-center gap-2 btn-accent text-sm py-3"
+          >
+            <Plus className="w-4 h-4" />
+            {lang === "pt" ? "Cadastrar negócio" : "List business"}
+          </button>
+
+          <button
+            onClick={() => { navigate("/admin"); setMobileOpen(false); }}
+            className="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground border border-border transition-all"
+          >
+            <LogIn className="w-4 h-4" />
+            Admin
+          </button>
+        </div>
+      )}
     </header>
   );
 }

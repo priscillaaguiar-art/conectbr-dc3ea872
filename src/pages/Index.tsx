@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
@@ -8,11 +6,10 @@ import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { WhyBRConect } from "@/components/home/WhyBRConect";
 import { CTASection } from "@/components/home/CTASection";
 import { AboutSection } from "@/components/home/AboutSection";
-import { Lang } from "@/lib/i18n";
+import { useLang } from "@/lib/LangContext";
 
 export default function Index() {
-  const [lang, setLang] = useState<Lang>("pt");
-  const navigate = useNavigate();
+  const { lang, setLang } = useLang();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

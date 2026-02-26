@@ -275,7 +275,7 @@ export default function RegisterBusiness() {
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <div><span className="text-muted-foreground">{t(lang, "form_name")}:</span> <span className="font-medium text-foreground">{form.name}</span></div>
-                  <div><span className="text-muted-foreground">{t(lang, "form_category")}:</span> <span className="font-medium text-foreground">{CATEGORIES.find(c => c.key === form.category)?.emoji} {form.category}</span></div>
+                  <div><span className="text-muted-foreground">{t(lang, "form_category")}:</span> <span className="font-medium text-foreground">{(() => { const sc = CATEGORIES.find((c) => c.key === form.category); return sc ? `${sc.emoji} ${t(lang, sc.labelKey as any)}` : "-"; })()}</span></div>
                   <div><span className="text-muted-foreground">{t(lang, "form_city")}:</span> <span className="font-medium text-foreground">{form.city}</span></div>
                   {form.whatsapp && <div><span className="text-muted-foreground">WhatsApp:</span> <span className="font-medium text-foreground">{form.whatsapp}</span></div>}
                   {form.instagram && <div><span className="text-muted-foreground">Instagram:</span> <span className="font-medium text-foreground">{form.instagram}</span></div>}

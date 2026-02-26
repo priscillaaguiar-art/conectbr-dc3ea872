@@ -4,12 +4,13 @@ import { Search, MapPin, SlidersHorizontal, X, ChevronDown } from "lucide-react"
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { BusinessCard } from "@/components/BusinessCard";
-import { Lang, t } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
 import { CATEGORIES, ONTARIO_CITIES } from "@/lib/data";
 import { useApprovedBusinesses } from "@/hooks/use-businesses";
+import { useLang } from "@/lib/LangContext";
 
 export default function SearchResults() {
-  const [lang, setLang] = useState<Lang>("pt");
+  const { lang, setLang } = useLang();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
 

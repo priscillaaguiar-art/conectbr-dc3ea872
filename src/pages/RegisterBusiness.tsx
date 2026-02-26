@@ -3,15 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Upload, ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Lang, t } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
 import { CATEGORIES, ONTARIO_CITIES } from "@/lib/data";
 import { useInsertBusiness } from "@/hooks/use-businesses";
+import { useLang } from "@/lib/LangContext";
 
 const STEPS_PT = ["Informações", "Contato", "Revisão"];
 const STEPS_EN = ["Information", "Contact", "Review"];
 
 export default function RegisterBusiness() {
-  const [lang, setLang] = useState<Lang>("pt");
+  const { lang, setLang } = useLang();
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const [step, setStep] = useState(0);

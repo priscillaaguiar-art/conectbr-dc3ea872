@@ -25,15 +25,15 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border">
+    <header className="sticky top-0 z-50 bg-white border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-xl gradient-hero flex items-center justify-center shadow-primary">
-            <span className="text-primary-foreground font-display font-bold text-sm leading-none">BR</span>
+          <div className="w-9 h-9 rounded-xl bg-verde flex items-center justify-center">
+            <span className="text-white font-display font-bold text-sm leading-none">BR</span>
           </div>
-          <span className="font-display font-bold text-xl text-foreground">
-            BR<span className="text-primary">Conect</span>
+          <span className="font-display font-bold text-xl tracking-tight text-dark">
+            BR<span className="text-verde">Conect</span>
           </span>
         </Link>
 
@@ -43,19 +43,19 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
           <div className="relative" ref={langRef}>
             <button
               onClick={() => setLangOpen(!langOpen)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm font-medium text-mid hover:text-dark hover:border-verde/30 transition-all"
             >
               <Globe className="w-4 h-4" />
               <span className="uppercase">{lang}</span>
               <ChevronDown className="w-3 h-3" />
             </button>
             {langOpen && (
-              <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-xl shadow-card overflow-hidden z-50 min-w-[100px]">
+              <div className="absolute right-0 top-full mt-1 bg-white border border-border rounded-xl shadow-card overflow-hidden z-50 min-w-[100px]">
                 {(["pt", "en"] as Lang[]).map((l) => (
                   <button
                     key={l}
                     onClick={() => { onLangChange(l); setLangOpen(false); }}
-                    className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-muted ${lang === l ? "text-primary bg-primary-muted" : "text-foreground"}`}
+                    className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-verde-muted ${lang === l ? "text-verde bg-verde-light" : "text-dark"}`}
                   >
                     {l === "pt" ? "🇧🇷 Português" : "🇨🇦 English"}
                   </button>
@@ -73,10 +73,10 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
             <span>{lang === "pt" ? "Cadastrar negócio" : "List business"}</span>
           </button>
 
-          {/* Login */}
+          {/* Admin */}
           <button
             onClick={() => navigate("/admin")}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted border border-border transition-all"
+            className="flex items-center gap-1.5 btn-outline text-sm py-2 px-4"
           >
             <LogIn className="w-4 h-4" />
             <span>Admin</span>
@@ -86,7 +86,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
         {/* Mobile hamburger */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="sm:hidden flex items-center justify-center w-10 h-10 rounded-xl text-foreground hover:bg-muted transition-colors"
+          className="sm:hidden flex items-center justify-center w-10 h-10 rounded-xl text-dark hover:bg-verde-muted transition-colors"
           aria-label="Menu"
         >
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -95,14 +95,13 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="sm:hidden border-t border-border bg-card px-4 py-4 space-y-3 animate-fade-in">
-          {/* Language */}
+        <div className="sm:hidden border-t border-border bg-white px-4 py-4 space-y-3 animate-fade-in">
           <div className="flex gap-2">
             {(["pt", "en"] as Lang[]).map((l) => (
               <button
                 key={l}
                 onClick={() => { onLangChange(l); setMobileOpen(false); }}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${lang === l ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${lang === l ? "bg-verde text-white" : "bg-verde-muted text-dark"}`}
               >
                 {l === "pt" ? "🇧🇷 PT" : "🇨🇦 EN"}
               </button>
@@ -119,7 +118,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
 
           <button
             onClick={() => { navigate("/admin"); setMobileOpen(false); }}
-            className="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground border border-border transition-all"
+            className="w-full flex items-center justify-center gap-2 btn-outline text-sm py-3"
           >
             <LogIn className="w-4 h-4" />
             Admin

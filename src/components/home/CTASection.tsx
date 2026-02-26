@@ -10,13 +10,13 @@ export function CTASection({ lang }: Props) {
   return (
     <section className="container mx-auto px-4 py-10">
       <div className="gradient-hero rounded-3xl p-10 md:p-16 relative overflow-hidden">
-        <div className="absolute -top-8 -right-8 w-48 h-48 rounded-full bg-accent/20" />
-        <div className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-primary-foreground/5" />
+        <div className="absolute -top-8 -right-8 w-48 h-48 rounded-full bg-amarelo/20" />
+        <div className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-white/5" />
         <div className="relative z-10 max-w-xl">
-          <h2 className="font-display font-bold text-3xl md:text-4xl text-primary-foreground mb-4 leading-tight">
+          <h2 className="font-display font-bold text-3xl md:text-4xl text-white mb-4 leading-tight">
             {t(lang, "cta_title")}
           </h2>
-          <p className="text-primary-foreground/70 mb-8 text-lg leading-relaxed">
+          <p className="text-white/70 mb-8 text-lg leading-relaxed">
             {t(lang, "cta_desc")}
           </p>
           <button

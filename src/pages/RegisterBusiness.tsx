@@ -79,6 +79,7 @@ export default function RegisterBusiness() {
         category: form.category,
         city: form.city,
         description: form.description,
+        type: form.type,
         whatsapp: form.whatsapp || undefined,
         instagram: form.instagram || undefined,
         phone: form.phone || undefined,

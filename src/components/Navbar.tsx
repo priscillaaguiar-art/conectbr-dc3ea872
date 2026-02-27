@@ -75,7 +75,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
 
           {/* Admin */}
           <button
-            onClick={() => navigate("/admin")}
+            onClick={() => navigate("/admin/login")}
             className="flex items-center gap-1.5 btn-outline text-sm py-2 px-4"
           >
             <LogIn className="w-4 h-4" />

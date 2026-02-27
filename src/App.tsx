@@ -9,6 +9,7 @@ import SearchResults from "./pages/SearchResults";
 import BusinessDetail from "./pages/BusinessDetail";
 import RegisterBusiness from "./pages/RegisterBusiness";
 import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 

@@ -80,12 +80,11 @@ export function useInsertBusiness() {
       phone?: string;
       email?: string;
     }) => {
-      const { data, error } = await supabase
-        .from("businesses")
-        .insert({ ...business, status: "pending", type: business.type || "company" })
-        .select()
-        .single();
+      const { data, error } = await supabase.functions.invoke("submit-business", {
+        body: business,
+      });
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
       return data;
     },
     onSuccess: () => {
@@ -143,11 +142,12 @@ export function useFeedbacks() {
 export function useInsertFeedback() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: { name: string | null; email: string; message: string }) => {
-      const { error } = await supabase
-        .from("feedbacks")
-        .insert({ name: data.name, email: data.email, message: data.message });
+    mutationFn: async (feedbackData: { name: string | null; email: string; message: string }) => {
+      const { data, error } = await supabase.functions.invoke("submit-feedback", {
+        body: feedbackData,
+      });
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["feedbacks"] });

@@ -12,6 +12,7 @@ import {
   BusinessRow,
 } from "@/hooks/use-businesses";
 import { useAuth } from "@/hooks/use-auth";
+import { useIsAdmin } from "@/hooks/use-admin-role";
 import { useLang } from "@/lib/LangContext";
 
 type Tab = "pending" | "approved" | "feedbacks";
@@ -19,6 +20,7 @@ type Tab = "pending" | "approved" | "feedbacks";
 export default function Admin() {
   const { lang, setLang } = useLang();
   const { user, loading: authLoading, signOut } = useAuth();
+  const { data: isAdmin, isLoading: roleLoading } = useIsAdmin();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("pending");
 
@@ -33,6 +35,12 @@ export default function Admin() {
     }
   }, [user, authLoading, navigate]);
 
+  useEffect(() => {
+    if (!authLoading && !roleLoading && user && isAdmin === false) {
+      navigate("/");
+    }
+  }, [user, authLoading, roleLoading, isAdmin, navigate]);
+
   const pending = businesses.filter((b) => b.status === "pending");
   const approved = businesses.filter((b) => b.status === "approved");
 
@@ -46,7 +54,7 @@ export default function Admin() {
     { key: "feedbacks", label: t(lang, "admin_feedbacks"), icon: <MessageSquare className="w-4 h-4" />, count: feedbacks.length },
   ];
 
-  if (authLoading) {
+  if (authLoading || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bg">
         <div className="text-center text-mid">
@@ -56,7 +64,7 @@ export default function Admin() {
     );
   }
 
-  if (!user) return null;
+  if (!user || !isAdmin) return null;
 
   return (
     <div className="min-h-screen bg-bg">

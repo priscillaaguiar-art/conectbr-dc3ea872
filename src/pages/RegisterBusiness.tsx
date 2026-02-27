@@ -207,6 +207,32 @@ export default function RegisterBusiness() {
                 </div>
               </div>
 
+              {/* Type */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">
+                  {lang === "pt" ? "Tipo de cadastro" : "Listing type"} *
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { value: "company", label: lang === "pt" ? "🏢 Empresa" : "🏢 Company" },
+                    { value: "freelancer", label: lang === "pt" ? "👤 Autônomo" : "👤 Freelancer" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, type: opt.value }))}
+                      className={`rounded-xl p-4 text-sm font-semibold cursor-pointer transition-all text-center ${
+                        form.type === opt.value
+                          ? "border-2 border-verde bg-verde-light text-verde"
+                          : "border border-border bg-white text-body"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1.5">{t(lang, "form_description")} *</label>

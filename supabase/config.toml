@@ -1,1 +1,7 @@
 project_id = "zciggxlohatznkpgjpto"
+
+[functions.submit-business]
+verify_jwt = false
+
+[functions.submit-feedback]
+verify_jwt = false

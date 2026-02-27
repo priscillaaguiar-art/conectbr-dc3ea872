@@ -117,7 +117,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
           </button>
 
           <button
-            onClick={() => { navigate("/admin"); setMobileOpen(false); }}
+            onClick={() => { navigate("/admin/login"); setMobileOpen(false); }}
             className="w-full flex items-center justify-center gap-2 btn-outline text-sm py-3"
           >
             <LogIn className="w-4 h-4" />

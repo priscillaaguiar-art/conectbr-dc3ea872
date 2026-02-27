@@ -28,6 +28,7 @@ const App = () => (
             <Route path="/negocio/:id" element={<BusinessDetail />} />
             <Route path="/cadastrar" element={<RegisterBusiness />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/privacidade" element={<Privacy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

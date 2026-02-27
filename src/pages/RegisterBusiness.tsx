@@ -24,6 +24,7 @@ export default function RegisterBusiness() {
     name: "",
     category: "",
     city: "",
+    type: "company",
     description: "",
     whatsapp: "",
     instagram: "",

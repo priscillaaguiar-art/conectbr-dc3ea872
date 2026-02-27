@@ -24,6 +24,7 @@ export default function RegisterBusiness() {
     name: "",
     category: "",
     city: "",
+    type: "company",
     description: "",
     whatsapp: "",
     instagram: "",
@@ -78,6 +79,7 @@ export default function RegisterBusiness() {
         category: form.category,
         city: form.city,
         description: form.description,
+        type: form.type,
         whatsapp: form.whatsapp || undefined,
         instagram: form.instagram || undefined,
         phone: form.phone || undefined,
@@ -202,6 +204,32 @@ export default function RegisterBusiness() {
                     <ChevronDown className="absolute right-3 top-3.5 w-4 h-4 text-muted-foreground pointer-events-none" />
                   </div>
                   {errors.city && <p className="text-xs text-destructive mt-1">{errors.city}</p>}
+                </div>
+              </div>
+
+              {/* Type */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">
+                  {lang === "pt" ? "Tipo de cadastro" : "Listing type"} *
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { value: "company", label: lang === "pt" ? "🏢 Empresa" : "🏢 Company" },
+                    { value: "freelancer", label: lang === "pt" ? "👤 Autônomo" : "👤 Freelancer" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, type: opt.value }))}
+                      className={`rounded-xl p-4 text-sm font-semibold cursor-pointer transition-all text-center ${
+                        form.type === opt.value
+                          ? "border-2 border-verde bg-verde-light text-verde"
+                          : "border border-border bg-white text-body"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
                 </div>
               </div>
 

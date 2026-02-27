@@ -75,7 +75,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
 
           {/* Admin */}
           <button
-            onClick={() => navigate("/admin")}
+            onClick={() => navigate("/admin/login")}
             className="flex items-center gap-1.5 btn-outline text-sm py-2 px-4"
           >
             <LogIn className="w-4 h-4" />
@@ -117,7 +117,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
           </button>
 
           <button
-            onClick={() => { navigate("/admin"); setMobileOpen(false); }}
+            onClick={() => { navigate("/admin/login"); setMobileOpen(false); }}
             className="w-full flex items-center justify-center gap-2 btn-outline text-sm py-3"
           >
             <LogIn className="w-4 h-4" />

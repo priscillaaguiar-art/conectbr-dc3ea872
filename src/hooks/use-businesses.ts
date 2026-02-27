@@ -74,6 +74,7 @@ export function useInsertBusiness() {
       category: string;
       city: string;
       description: string;
+      type?: string;
       whatsapp?: string;
       instagram?: string;
       phone?: string;
@@ -81,7 +82,7 @@ export function useInsertBusiness() {
     }) => {
       const { data, error } = await supabase
         .from("businesses")
-        .insert({ ...business, status: "pending", type: "company" })
+        .insert({ ...business, status: "pending", type: business.type || "company" })
         .select()
         .single();
       if (error) throw error;

@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Globe, Plus, LogIn, ChevronDown, Menu, X } from "lucide-react";
+import { Globe, Plus, LogIn, ChevronDown, Menu, X, User } from "lucide-react";
 import { Lang } from "@/lib/i18n";
+import { useAuth } from "@/hooks/use-auth";
 
 interface NavbarProps {
   lang: Lang;
@@ -14,6 +15,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const langRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -81,14 +83,26 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
             <span>{lang === "pt" ? "Cadastrar negócio" : "List business"}</span>
           </button>
 
-          {/* Admin */}
-          <button
-            onClick={() => navigate("/admin/login")}
-            className="flex items-center gap-1.5 btn-outline text-sm py-2 px-4"
-          >
-            <LogIn className="w-4 h-4" />
-            <span>Admin</span>
-          </button>
+          {/* User login / account */}
+          {user ? (
+            <button
+              onClick={() => navigate("/minha-conta")}
+              className="flex items-center gap-1.5 btn-outline text-sm py-2 px-4"
+            >
+              <div className="w-5 h-5 rounded-full bg-verde flex items-center justify-center">
+                <span className="text-white text-xs font-bold">{(user.email || "U")[0].toUpperCase()}</span>
+              </div>
+              <span>{lang === "pt" ? "Minha conta" : "My account"}</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/login")}
+              className="flex items-center gap-1.5 btn-outline text-sm py-2 px-4"
+            >
+              <LogIn className="w-4 h-4" />
+              <span>Login</span>
+            </button>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -124,13 +138,23 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
             {lang === "pt" ? "Cadastrar negócio" : "List business"}
           </button>
 
-          <button
-            onClick={() => { navigate("/admin/login"); setMobileOpen(false); }}
-            className="w-full flex items-center justify-center gap-2 btn-outline text-sm py-3"
-          >
-            <LogIn className="w-4 h-4" />
-            Admin
-          </button>
+          {user ? (
+            <button
+              onClick={() => { navigate("/minha-conta"); setMobileOpen(false); }}
+              className="w-full flex items-center justify-center gap-2 btn-outline text-sm py-3"
+            >
+              <User className="w-4 h-4" />
+              {lang === "pt" ? "Minha conta" : "My account"}
+            </button>
+          ) : (
+            <button
+              onClick={() => { navigate("/login"); setMobileOpen(false); }}
+              className="w-full flex items-center justify-center gap-2 btn-outline text-sm py-3"
+            >
+              <LogIn className="w-4 h-4" />
+              Login
+            </button>
+          )}
         </div>
       )}
     </header>

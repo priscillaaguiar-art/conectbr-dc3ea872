@@ -8,6 +8,7 @@ import { CATEGORIES, ONTARIO_CITIES } from "@/lib/data";
 import { useInsertBusiness } from "@/hooks/use-businesses";
 import { useLang } from "@/lib/LangContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 const STEPS_PT = ["Informações", "Contato", "Revisão"];
 const STEPS_EN = ["Information", "Contact", "Review"];
@@ -39,6 +40,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default function RegisterBusiness() {
   const { lang, setLang } = useLang();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [step, setStep] = useState(0);
   const insertBusiness = useInsertBusiness();
@@ -153,6 +155,7 @@ export default function RegisterBusiness() {
         phone: form.phone ? stripNonDigits(form.phone) : undefined,
         email: form.email || undefined,
         photo: photoUrl,
+        owner_id: user?.id || undefined,
       });
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: "smooth" });

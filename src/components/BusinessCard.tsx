@@ -40,8 +40,12 @@ export function BusinessCard({ business, lang }: BusinessCardProps) {
       onClick={() => navigate(`/negocio/${business.id}`)}
     >
       <div className="h-36 gradient-hero flex items-center justify-center relative">
-        <div className="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center backdrop-blur-sm">
-          <span className="font-display font-bold text-2xl text-white">{initials}</span>
+        <div className="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center backdrop-blur-sm overflow-hidden">
+          {business.photo ? (
+            <img src={business.photo} alt={business.name} className="w-full h-full object-cover rounded-[14px]" />
+          ) : (
+            <span className="font-display font-bold text-2xl text-white">{initials}</span>
+          )}
         </div>
         {business.type === "company" && (
           <div className="absolute top-3 right-3 px-2 py-1 bg-white/15 rounded-lg text-white text-xs font-medium backdrop-blur-sm">

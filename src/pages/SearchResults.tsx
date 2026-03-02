@@ -35,6 +35,7 @@ export default function SearchResults() {
     if (selectedCity) params.set("cidade", selectedCity);
     if (selectedCategory) params.set("categoria", selectedCategory);
     setSearchParams(params);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const results = useMemo(() => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle, XCircle, Trash2, MessageSquare, Building2, Clock, LogOut } from "lucide-react";
+import { CheckCircle, XCircle, Trash2, MessageSquare, Building2, Clock, LogOut, Pencil, Mail } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { t } from "@/lib/i18n";
 import { CATEGORIES } from "@/lib/data";
@@ -14,6 +14,7 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-admin-role";
 import { useLang } from "@/lib/LangContext";
+import { EditBusinessModal } from "@/components/admin/EditBusinessModal";
 
 type Tab = "pending" | "approved" | "feedbacks";
 
@@ -23,6 +24,7 @@ export default function Admin() {
   const { data: isAdmin, isLoading: roleLoading } = useIsAdmin();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("pending");
+  const [editingBusiness, setEditingBusiness] = useState<BusinessRow | null>(null);
 
   const { data: businesses = [], isLoading } = useAllBusinesses();
   const { data: feedbacks = [] } = useFeedbacks();
@@ -135,6 +137,7 @@ export default function Admin() {
                         onApprove={() => approve(b.id)}
                         onReject={() => reject(b.id)}
                         onDelete={() => remove(b.id)}
+                        onEdit={() => setEditingBusiness(b)}
                         showApprove
                       />
                     ))}
@@ -151,6 +154,7 @@ export default function Admin() {
                     business={b}
                     lang={lang}
                     onDelete={() => remove(b.id)}
+                    onEdit={() => setEditingBusiness(b)}
                   />
                 ))}
               </div>
@@ -160,8 +164,19 @@ export default function Admin() {
               <div className="space-y-4">
                 {feedbacks.map((f) => (
                   <div key={f.id} className="bg-white border border-border rounded-2xl p-5">
-                    <p className="text-dark mb-2 leading-relaxed">"{f.message}"</p>
-                    <p className="text-xs text-mid">{new Date(f.created_at).toLocaleDateString()}</p>
+                    <p className="text-dark mb-3 leading-relaxed italic">"{f.message}"</p>
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-3">
+                        {f.name && <p className="text-sm font-semibold text-foreground">{f.name}</p>}
+                        {f.email && (
+                          <a href={`mailto:${f.email}`} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors">
+                            <Mail className="w-3.5 h-3.5" />
+                            {f.email}
+                          </a>
+                        )}
+                      </div>
+                      <p className="text-xs text-mid">{new Date(f.created_at).toLocaleDateString()}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -169,6 +184,14 @@ export default function Admin() {
           </>
         )}
       </div>
+
+      {editingBusiness && (
+        <EditBusinessModal
+          business={editingBusiness}
+          lang={lang}
+          onClose={() => setEditingBusiness(null)}
+        />
+      )}
     </div>
   );
 }
@@ -181,10 +204,11 @@ interface BusinessAdminCardProps {
   onApprove?: () => void;
   onReject?: () => void;
   onDelete: () => void;
+  onEdit?: () => void;
   showApprove?: boolean;
 }
 
-function BusinessAdminCard({ business, lang, onApprove, onReject, onDelete, showApprove }: BusinessAdminCardProps) {
+function BusinessAdminCard({ business, lang, onApprove, onReject, onDelete, onEdit, showApprove }: BusinessAdminCardProps) {
   const cat = CATEGORIES.find((c) => c.key === business.category);
   const initials = business.name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 
@@ -225,6 +249,15 @@ function BusinessAdminCard({ business, lang, onApprove, onReject, onDelete, show
             >
               <XCircle className="w-4 h-4" />
               {t(lang, "reject")}
+            </button>
+          )}
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              className="flex items-center gap-1.5 bg-blue-50 text-blue-700 border border-blue-100 rounded-xl px-4 py-2 text-sm font-semibold hover:bg-blue-100 transition-colors"
+            >
+              <Pencil className="w-4 h-4" />
+              {t(lang, "edit")}
             </button>
           )}
           <button

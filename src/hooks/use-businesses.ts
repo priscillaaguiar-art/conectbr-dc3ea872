@@ -55,7 +55,6 @@ export function useAllBusinesses() {
   return useQuery({
     queryKey: ["businesses", "all"],
     queryFn: async () => {
-      // This will only return approved due to RLS unless authenticated
       const { data, error } = await supabase
         .from("businesses")
         .select("*")
@@ -79,6 +78,7 @@ export function useInsertBusiness() {
       instagram?: string;
       phone?: string;
       email?: string;
+      photo?: string;
     }) => {
       const { data, error } = await supabase.functions.invoke("submit-business", {
         body: business,
@@ -105,6 +105,23 @@ export function useUpdateBusinessStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["businesses"] });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+  });
+}
+
+export function useUpdateBusiness() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...fields }: { id: string; [key: string]: any }) => {
+      const { error } = await supabase
+        .from("businesses")
+        .update(fields)
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["businesses"] });
     },
   });
 }
@@ -121,6 +138,7 @@ export function useDeleteBusiness() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["businesses"] });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     },
   });
 }
@@ -134,7 +152,7 @@ export function useFeedbacks() {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as { id: string; message: string; created_at: string }[];
+      return data as { id: string; name: string | null; email: string; message: string; created_at: string }[];
     },
   });
 }

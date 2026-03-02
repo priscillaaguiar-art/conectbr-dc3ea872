@@ -6,7 +6,7 @@ import { useLang } from "@/lib/LangContext";
 
 export default function AdminLogin() {
   const { lang } = useLang();
-  const { signIn } = useAuth();
+  const { signInWithEmail } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -20,7 +20,7 @@ export default function AdminLogin() {
     setError("");
     setLoading(true);
 
-    const { error } = await signIn(email, password);
+    const { error } = await signInWithEmail(email, password);
 
     if (error) {
       setError(

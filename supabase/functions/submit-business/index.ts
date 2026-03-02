@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
 
     // Server-side validation
-    const { name, category, city, description, type, whatsapp, instagram, phone, email } = body;
+    const { name, category, city, description, type, whatsapp, instagram, phone, email, photo, owner_id } = body;
 
     if (!name || typeof name !== "string" || name.trim().length === 0 || name.length > 200) {
       return new Response(JSON.stringify({ error: "Invalid name" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -81,6 +81,8 @@ Deno.serve(async (req) => {
         instagram: instagram?.trim() || null,
         phone: phone?.trim() || null,
         email: email?.trim() || null,
+        photo: photo?.trim() || null,
+        owner_id: owner_id || null,
       })
       .select()
       .single();

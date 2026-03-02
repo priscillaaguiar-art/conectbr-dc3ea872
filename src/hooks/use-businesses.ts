@@ -79,6 +79,7 @@ export function useInsertBusiness() {
       phone?: string;
       email?: string;
       photo?: string;
+      owner_id?: string;
     }) => {
       const { data, error } = await supabase.functions.invoke("submit-business", {
         body: business,

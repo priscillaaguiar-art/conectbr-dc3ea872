@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Globe, Plus, LogIn, ChevronDown, Menu, X } from "lucide-react";
 import { Lang } from "@/lib/i18n";
 
@@ -12,6 +12,7 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
   const [langOpen, setLangOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const langRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,11 +25,18 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (location.pathname === "/") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
+        <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2 group">
           <div className="w-9 h-9 rounded-xl bg-verde flex items-center justify-center">
             <span className="text-white font-display font-bold text-sm leading-none">BR</span>
           </div>

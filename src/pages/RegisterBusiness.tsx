@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Upload, ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
@@ -7,9 +7,34 @@ import { t } from "@/lib/i18n";
 import { CATEGORIES, ONTARIO_CITIES } from "@/lib/data";
 import { useInsertBusiness } from "@/hooks/use-businesses";
 import { useLang } from "@/lib/LangContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const STEPS_PT = ["Informações", "Contato", "Revisão"];
 const STEPS_EN = ["Information", "Contact", "Review"];
+
+function stripNonDigits(val: string) {
+  return val.replace(/\D/g, "");
+}
+
+function formatPhoneMask(digits: string) {
+  if (digits.length === 0) return "";
+  if (digits.length <= 1) return `+${digits}`;
+  if (digits.length <= 4) return `+${digits.slice(0, 1)} (${digits.slice(1)}`;
+  if (digits.length <= 7) return `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4)}`;
+  if (digits.length <= 11) return `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+  // For longer numbers (e.g. Brazil +55)
+  if (digits.length <= 2) return `+${digits}`;
+  if (digits.length <= 4) return `+${digits.slice(0, 2)} (${digits.slice(2)}`;
+  // Generic fallback
+  return `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 11)}${digits.length > 11 ? digits.slice(11) : ""}`;
+}
+
+function handlePhoneInput(rawValue: string): string {
+  const digits = stripNonDigits(rawValue).slice(0, 15);
+  return formatPhoneMask(digits);
+}
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function RegisterBusiness() {
   const { lang, setLang } = useLang();
@@ -17,6 +42,12 @@ export default function RegisterBusiness() {
   const [submitted, setSubmitted] = useState(false);
   const [step, setStep] = useState(0);
   const insertBusiness = useInsertBusiness();
+  const formTopRef = useRef<HTMLDivElement>(null);
+
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
 
   const steps = lang === "pt" ? STEPS_PT : STEPS_EN;
 
@@ -46,6 +77,28 @@ export default function RegisterBusiness() {
       if (!form.whatsapp && !form.phone && !form.email) {
         newErrors.whatsapp = lang === "pt" ? "Informe ao menos um contato" : "Provide at least one contact";
       }
+      // Email validation
+      if (form.email && !EMAIL_REGEX.test(form.email)) {
+        newErrors.email = lang === "pt" ? "Por favor, insira um e-mail válido." : "Please enter a valid email.";
+      }
+      // WhatsApp validation
+      if (form.whatsapp) {
+        const digits = stripNonDigits(form.whatsapp);
+        if (digits.length < 10 || digits.length > 15) {
+          newErrors.whatsapp = lang === "pt"
+            ? "Número inválido. Use o formato +1 (416) 555-0000"
+            : "Invalid number. Use format +1 (416) 555-0000";
+        }
+      }
+      // Phone validation
+      if (form.phone) {
+        const digits = stripNonDigits(form.phone);
+        if (digits.length < 10 || digits.length > 15) {
+          newErrors.phone = lang === "pt"
+            ? "Número inválido. Use o formato +1 (416) 555-0000"
+            : "Invalid number. Use format +1 (416) 555-0000";
+        }
+      }
     }
     return newErrors;
   };
@@ -58,12 +111,12 @@ export default function RegisterBusiness() {
     }
     setErrors({});
     setStep((s) => Math.min(s + 1, 2));
+    formTopRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
   const handleSubmit = async () => {
-    // validate all steps
     const errs0 = validateStep(0);
     const errs1 = validateStep(1);
     const allErrs = { ...errs0, ...errs1 };
@@ -74,18 +127,35 @@ export default function RegisterBusiness() {
       return;
     }
     try {
+      let photoUrl: string | undefined = undefined;
+      if (photoFile) {
+        setUploadingPhoto(true);
+        const ext = photoFile.name.split(".").pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("business-photos")
+          .upload(fileName, photoFile, { upsert: false });
+        setUploadingPhoto(false);
+        if (!uploadError && uploadData) {
+          const { data: urlData } = supabase.storage.from("business-photos").getPublicUrl(uploadData.path);
+          photoUrl = urlData.publicUrl;
+        }
+      }
+
       await insertBusiness.mutateAsync({
         name: form.name,
         category: form.category,
         city: form.city,
         description: form.description,
         type: form.type,
-        whatsapp: form.whatsapp || undefined,
+        whatsapp: form.whatsapp ? stripNonDigits(form.whatsapp) : undefined,
         instagram: form.instagram || undefined,
-        phone: form.phone || undefined,
+        phone: form.phone ? stripNonDigits(form.phone) : undefined,
         email: form.email || undefined,
+        photo: photoUrl,
       });
       setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error("Error registering business:", err);
     }
@@ -93,6 +163,12 @@ export default function RegisterBusiness() {
 
   const update = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
+    setErrors((er) => ({ ...er, [field]: undefined }));
+  };
+
+  const updatePhone = (field: "whatsapp" | "phone") => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const masked = handlePhoneInput(e.target.value);
+    setForm((f) => ({ ...f, [field]: masked }));
     setErrors((er) => ({ ...er, [field]: undefined }));
   };
 
@@ -126,6 +202,7 @@ export default function RegisterBusiness() {
       <Navbar lang={lang} onLangChange={setLang} />
 
       <main className="container mx-auto px-4 py-12 max-w-2xl flex-1">
+        <div ref={formTopRef} />
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
@@ -164,13 +241,36 @@ export default function RegisterBusiness() {
                 <label className="block text-sm font-medium text-foreground mb-2">
                   {t(lang, "form_photo")} <span className="text-muted-foreground text-xs">{t(lang, "optional")}</span>
                 </label>
-                <div className="border-2 border-dashed border-border rounded-2xl p-8 text-center hover:border-primary/40 transition-colors cursor-pointer">
-                  <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">
-                    {lang === "pt" ? "Clique para upload ou arraste aqui" : "Click to upload or drag here"}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">PNG, JPG, WEBP — máx. 5MB</p>
-                </div>
+                <label className="border-2 border-dashed border-border rounded-2xl p-8 text-center hover:border-primary/40 transition-colors cursor-pointer block">
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (file.size > 5 * 1024 * 1024) {
+                        setPhotoError(lang === "pt" ? "Imagem muito grande. Máximo 5MB." : "Image too large. Max 5MB.");
+                        return;
+                      }
+                      setPhotoError(null);
+                      setPhotoFile(file);
+                      setPhotoPreview(URL.createObjectURL(file));
+                    }}
+                  />
+                  {photoPreview ? (
+                    <img src={photoPreview} alt="Preview" className="max-h-40 mx-auto rounded-xl object-contain" />
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">
+                        {lang === "pt" ? "Clique para upload ou arraste aqui" : "Click to upload or drag here"}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">PNG, JPG, WEBP — máx. 5MB</p>
+                    </>
+                  )}
+                </label>
+                {photoError && <p className="text-xs text-destructive mt-1">{photoError}</p>}
               </div>
 
               {/* Name */}
@@ -265,7 +365,7 @@ export default function RegisterBusiness() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-medium text-muted-foreground mb-1.5">{t(lang, "form_whatsapp")}</label>
-                    <input type="tel" value={form.whatsapp} onChange={update("whatsapp")} className={`${fieldClass(errors.whatsapp)} text-sm`} placeholder="+1 (416) 555-0001" />
+                    <input type="tel" value={form.whatsapp} onChange={updatePhone("whatsapp")} className={`${fieldClass(errors.whatsapp)} text-sm`} placeholder="+1 (416) 555-0001" />
                     {errors.whatsapp && <p className="text-xs text-destructive mt-1">{errors.whatsapp}</p>}
                   </div>
                   <div>
@@ -274,11 +374,13 @@ export default function RegisterBusiness() {
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-muted-foreground mb-1.5">{t(lang, "form_phone")}</label>
-                    <input type="tel" value={form.phone} onChange={update("phone")} className="input-search w-full text-sm" placeholder="+1 (416) 555-0001" />
+                    <input type="tel" value={form.phone} onChange={updatePhone("phone")} className={`${fieldClass(errors.phone)} text-sm`} placeholder="+1 (416) 555-0001" />
+                    {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone}</p>}
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-muted-foreground mb-1.5">{t(lang, "form_email")}</label>
-                    <input type="email" value={form.email} onChange={update("email")} className="input-search w-full text-sm" placeholder="seu@email.com" />
+                    <input type="email" value={form.email} onChange={update("email")} className={`${fieldClass(errors.email)} text-sm`} placeholder="seu@email.com" />
+                    {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
                   </div>
                 </div>
               </div>
@@ -301,6 +403,9 @@ export default function RegisterBusiness() {
                 <h3 className="font-display font-bold text-lg text-foreground">
                   {lang === "pt" ? "Revise seu cadastro" : "Review your listing"}
                 </h3>
+                {photoPreview && (
+                  <img src={photoPreview} alt="Preview" className="max-h-32 rounded-xl object-contain" />
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <div><span className="text-muted-foreground">{t(lang, "form_name")}:</span> <span className="font-medium text-foreground">{form.name}</span></div>
                   <div><span className="text-muted-foreground">{t(lang, "form_category")}:</span> <span className="font-medium text-foreground">{(() => { const sc = CATEGORIES.find((c) => c.key === form.category); return sc ? `${sc.emoji} ${t(lang, sc.labelKey as any)}` : "-"; })()}</span></div>
@@ -320,10 +425,12 @@ export default function RegisterBusiness() {
                 <button type="button" onClick={prevStep} className="btn-outline flex-1 py-4 text-base">
                   {lang === "pt" ? "Voltar" : "Back"}
                 </button>
-                <button type="button" onClick={handleSubmit} disabled={insertBusiness.isPending} className="btn-accent flex-1 py-4 text-base">
-                  {insertBusiness.isPending
-                    ? (lang === "pt" ? "Salvando..." : "Saving...")
-                    : t(lang, "form_save")}
+                <button type="button" onClick={handleSubmit} disabled={insertBusiness.isPending || uploadingPhoto} className="btn-accent flex-1 py-4 text-base">
+                  {uploadingPhoto
+                    ? (lang === "pt" ? "Enviando foto..." : "Uploading photo...")
+                    : insertBusiness.isPending
+                      ? (lang === "pt" ? "Salvando..." : "Saving...")
+                      : t(lang, "form_save")}
                 </button>
               </div>
             </div>

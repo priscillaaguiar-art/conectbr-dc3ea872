@@ -54,16 +54,16 @@ export default function BusinessDetail() {
         </button>
 
         <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-card mb-6">
-          <div className="h-40 gradient-hero relative flex items-center justify-center">
-            <div className="w-20 h-20 rounded-2xl bg-primary-foreground/20 flex items-center justify-center overflow-hidden">
-              {business.photo ? (
-                <img src={business.photo} alt={business.name} className="w-full h-full object-cover rounded-2xl" />
-              ) : (
-                <span className="font-display font-bold text-3xl text-primary-foreground">{initials}</span>
-              )}
-            </div>
+          <div className="aspect-video w-full relative overflow-hidden">
+            {business.photo ? (
+              <img src={business.photo} alt={business.name} className="w-full h-full object-cover object-top" />
+            ) : (
+              <div className="w-full h-full gradient-hero flex items-center justify-center">
+                <span className="font-display font-bold text-4xl text-primary-foreground">{initials}</span>
+              </div>
+            )}
             {business.type === "company" && (
-              <div className="absolute top-4 right-4 px-3 py-1.5 bg-primary-foreground/20 rounded-xl text-primary-foreground text-xs font-semibold backdrop-blur-sm">
+              <div className="absolute top-4 right-4 px-3 py-1.5 bg-black/30 rounded-xl text-primary-foreground text-xs font-semibold backdrop-blur-sm">
                 {lang === "pt" ? "Empresa" : "Company"}
               </div>
             )}

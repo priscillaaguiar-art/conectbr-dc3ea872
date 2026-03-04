@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle, Upload, ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
@@ -91,7 +91,7 @@ async function autocropImage(file: File): Promise<{ file: File; previewUrl: stri
 export default function RegisterBusiness() {
   const { lang, setLang } = useLang();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [step, setStep] = useState(0);
   const insertBusiness = useInsertBusiness();
@@ -101,8 +101,6 @@ export default function RegisterBusiness() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
-
-  const steps = lang === "pt" ? STEPS_PT : STEPS_EN;
 
   const [form, setForm] = useState({
     name: "",
@@ -117,6 +115,29 @@ export default function RegisterBusiness() {
   });
 
   const [errors, setErrors] = useState<Partial<typeof form>>({});
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/login?redirect=/cadastrar", { replace: true });
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-10 h-10 border-2 border-verde border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground">
+            {lang === "pt" ? "Verificando acesso..." : "Checking access..."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+  const steps = lang === "pt" ? STEPS_PT : STEPS_EN;
 
   const validateStep = (s: number) => {
     const newErrors: Partial<typeof form> = {};

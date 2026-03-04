@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLang } from "@/lib/LangContext";
@@ -10,6 +10,9 @@ export default function Login() {
   const { lang, setLang } = useLang();
   const { signInWithEmail, signUpWithEmail } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/minha-conta";
+  const isCadastroFlow = redirectTo === "/cadastrar";
 
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -28,7 +31,7 @@ export default function Login() {
       if (error) {
         setError(lang === "pt" ? "E-mail ou senha incorretos." : "Incorrect email or password.");
       } else {
-        navigate("/minha-conta");
+        navigate(redirectTo);
       }
     } else {
       const { error } = await signUpWithEmail(email, password);
@@ -65,9 +68,33 @@ export default function Login() {
                 : (lang === "pt" ? "Criar sua conta" : "Create your account")}
             </h1>
             <p className="text-muted-foreground text-sm mt-1">
-              {lang === "pt" ? "Gerencie seus negócios no BRConect" : "Manage your businesses on BRConect"}
+              {isCadastroFlow
+                ? (lang === "pt"
+                    ? "Entre ou crie sua conta para cadastrar seu negócio 🏪"
+                    : "Sign in or create your account to list your business 🏪")
+                : (lang === "pt"
+                    ? "Gerencie seus negócios no BRConect"
+                    : "Manage your businesses on BRConect")}
             </p>
           </div>
+
+          {isCadastroFlow && (
+            <div className="bg-verde-light border border-verde/20 rounded-2xl px-5 py-4 mb-5 flex items-start gap-3">
+              <span className="text-2xl flex-shrink-0">🚀</span>
+              <div>
+                <p className="text-sm font-bold text-verde mb-0.5">
+                  {lang === "pt"
+                    ? "Quase lá! É rapidinho, promessa. 😄"
+                    : "Almost there! Super quick, we promise. 😄"}
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {lang === "pt"
+                    ? "Para vincular o negócio à sua conta e poder editar quando quiser, precisamos só de um login rápido. Menos de 1 minuto e seu negócio já está no ar! 🎉"
+                    : "To link your business to your account and edit anytime, we just need a quick login. Less than 1 minute and your business is live! 🎉"}
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="bg-card border border-border rounded-2xl p-6 shadow-card">
             {/* Errors / Success */}

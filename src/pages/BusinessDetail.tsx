@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
-import { ArrowLeft, MapPin, MessageCircle, Instagram, Phone, Mail, ExternalLink } from "lucide-react";
+import { ArrowLeft, MapPin, MessageCircle, Instagram, Phone, Mail, ExternalLink, Globe, Star } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { t } from "@/lib/i18n";
@@ -109,6 +109,13 @@ export default function BusinessDetail() {
                     ? "bg-gradient-to-b from-black/10 via-black/30 to-black/80"
                     : "bg-gradient-to-b from-white/10 via-white/20 to-white/75"
                 }`} />
+                {/* Featured badge */}
+                {business.featured && (
+                  <div className="absolute top-4 left-4 px-3 py-1.5 bg-amarelo/90 backdrop-blur-sm rounded-xl text-dark text-xs font-bold flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                    {lang === "pt" ? "Destaque" : "Featured"}
+                  </div>
+                )}
                 {/* Name & category over photo */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <h1
@@ -147,6 +154,13 @@ export default function BusinessDetail() {
             ) : (
               <div className="w-full h-full gradient-hero flex items-center justify-center relative">
                 <span className="font-display font-bold text-4xl text-primary-foreground">{initials}</span>
+                {/* Featured badge */}
+                {business.featured && (
+                  <div className="absolute top-4 left-4 px-3 py-1.5 bg-amarelo/90 backdrop-blur-sm rounded-xl text-dark text-xs font-bold flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                    {lang === "pt" ? "Destaque" : "Featured"}
+                  </div>
+                )}
                 {/* Name & category over gradient */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <h1 className="font-display font-bold text-3xl tracking-tight mb-2 text-white"
@@ -221,6 +235,18 @@ export default function BusinessDetail() {
                   >
                     <Phone className="w-4 h-4" />
                     {business.phone}
+                  </a>
+                )}
+                {business.website && (
+                  <a
+                    href={business.website.startsWith("http") ? business.website : `https://${business.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-100 rounded-xl px-4 py-2.5 text-sm font-semibold hover:bg-blue-100 transition-colors"
+                  >
+                    <Globe className="w-4 h-4" />
+                    Website
+                    <ExternalLink className="w-3.5 h-3.5 opacity-60" />
                   </a>
                 )}
                 {business.email && (

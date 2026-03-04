@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback } from "react";
 import { Lang } from "@/lib/i18n";
 
 interface LangContextType {
@@ -11,8 +11,24 @@ const LangContext = createContext<LangContextType>({
   setLang: () => {},
 });
 
+function getInitialLang(): Lang {
+  try {
+    const stored = localStorage.getItem("brconect_lang");
+    if (stored === "pt" || stored === "en") return stored;
+  } catch {}
+  return "pt";
+}
+
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("pt");
+  const [lang, setLangState] = useState<Lang>(getInitialLang);
+
+  const setLang = useCallback((l: Lang) => {
+    setLangState(l);
+    try {
+      localStorage.setItem("brconect_lang", l);
+    } catch {}
+  }, []);
+
   return (
     <LangContext.Provider value={{ lang, setLang }}>
       {children}

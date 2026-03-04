@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle, XCircle, Trash2, MessageSquare, Building2, Clock, LogOut, Pencil, Mail } from "lucide-react";
+import { CheckCircle, XCircle, Trash2, MessageSquare, Building2, Clock, LogOut, Pencil, Mail, Star } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { t } from "@/lib/i18n";
 import { CATEGORIES } from "@/lib/data";
@@ -8,6 +8,7 @@ import {
   useAllBusinesses,
   useUpdateBusinessStatus,
   useDeleteBusiness,
+  useToggleFeatured,
   useFeedbacks,
   BusinessRow,
 } from "@/hooks/use-businesses";
@@ -30,6 +31,7 @@ export default function Admin() {
   const { data: feedbacks = [] } = useFeedbacks();
   const updateStatus = useUpdateBusinessStatus();
   const deleteBusiness = useDeleteBusiness();
+  const toggleFeatured = useToggleFeatured();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -48,7 +50,14 @@ export default function Admin() {
 
   const approve = (id: string) => updateStatus.mutate({ id, status: "approved" });
   const reject = (id: string) => updateStatus.mutate({ id, status: "rejected" });
-  const remove = (id: string) => deleteBusiness.mutate(id);
+  const remove = (id: string) => {
+    const confirmed = window.confirm(
+      lang === "pt"
+        ? "Tem certeza que deseja excluir este negócio? Esta ação não pode ser desfeita."
+        : "Are you sure you want to delete this business? This action cannot be undone."
+    );
+    if (confirmed) deleteBusiness.mutate(id);
+  };
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode; count?: number }[] = [
     { key: "pending", label: t(lang, "admin_pending"), icon: <Clock className="w-4 h-4" />, count: pending.length },
@@ -155,6 +164,7 @@ export default function Admin() {
                     lang={lang}
                     onDelete={() => remove(b.id)}
                     onEdit={() => setEditingBusiness(b)}
+                    onToggleFeatured={() => toggleFeatured.mutate({ id: b.id, featured: !b.featured })}
                   />
                 ))}
               </div>
@@ -205,10 +215,11 @@ interface BusinessAdminCardProps {
   onReject?: () => void;
   onDelete: () => void;
   onEdit?: () => void;
+  onToggleFeatured?: () => void;
   showApprove?: boolean;
 }
 
-function BusinessAdminCard({ business, lang, onApprove, onReject, onDelete, onEdit, showApprove }: BusinessAdminCardProps) {
+function BusinessAdminCard({ business, lang, onApprove, onReject, onDelete, onEdit, onToggleFeatured, showApprove }: BusinessAdminCardProps) {
   const cat = CATEGORIES.find((c) => c.key === business.category);
   const initials = business.name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 
@@ -232,7 +243,15 @@ function BusinessAdminCard({ business, lang, onApprove, onReject, onDelete, onEd
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
-            <h3 className="font-semibold text-dark">{business.name}</h3>
+            <h3 className="font-semibold text-dark flex items-center gap-2">
+              {business.name}
+              {business.featured && (
+                <span className="inline-flex items-center gap-1 text-xs font-bold text-amarelo-dark bg-amarelo-light px-2 py-0.5 rounded-full">
+                  <Star className="w-3 h-3 fill-current" />
+                  {lang === "pt" ? "Destaque" : "Featured"}
+                </span>
+              )}
+            </h3>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               {cat && <span className="text-xs text-mid">{cat.emoji} {t(lang, cat.labelKey as any)}</span>}
               <span className="text-mid">·</span>
@@ -261,6 +280,21 @@ function BusinessAdminCard({ business, lang, onApprove, onReject, onDelete, onEd
             >
               <XCircle className="w-4 h-4" />
               {t(lang, "reject")}
+            </button>
+          )}
+          {onToggleFeatured && (
+            <button
+              onClick={onToggleFeatured}
+              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
+                business.featured
+                  ? "bg-amarelo-light text-amarelo-dark border border-amarelo/30 hover:bg-amarelo/20"
+                  : "bg-gray-50 text-mid border border-border hover:bg-gray-100"
+              }`}
+            >
+              <Star className={`w-4 h-4 ${business.featured ? "fill-current" : ""}`} />
+              {business.featured
+                ? (lang === "pt" ? "Remover destaque" : "Remove highlight")
+                : (lang === "pt" ? "Destacar" : "Highlight")}
             </button>
           )}
           {onEdit && (

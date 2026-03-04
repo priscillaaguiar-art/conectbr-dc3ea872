@@ -1,18 +1,22 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Search, MapPin, SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { Search, MapPin, SlidersHorizontal, X, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { BusinessCard } from "@/components/BusinessCard";
+import { BusinessCardSkeleton } from "@/components/BusinessCardSkeleton";
 import { t } from "@/lib/i18n";
 import { CATEGORIES, ONTARIO_CITIES } from "@/lib/data";
 import { useApprovedBusinesses } from "@/hooks/use-businesses";
 import { useLang } from "@/lib/LangContext";
 
+const PAGE_SIZE = 12;
+
 export default function SearchResults() {
   const { lang, setLang } = useLang();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1);
 
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get("categoria") ?? "");
@@ -29,6 +33,11 @@ export default function SearchResults() {
     setSelectedCity(searchParams.get("cidade") ?? "");
   }, [searchParams]);
 
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [query, selectedCategory, selectedCity, selectedType, sortBy]);
+
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (query) params.set("q", query);
@@ -38,7 +47,7 @@ export default function SearchResults() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const results = useMemo(() => {
+  const allResults = useMemo(() => {
     return businesses.filter((b) => {
       const q = query.toLowerCase();
       const matchQuery = !q || b.name.toLowerCase().includes(q) || b.description.toLowerCase().includes(q) || b.category.includes(q);
@@ -51,6 +60,9 @@ export default function SearchResults() {
       return 0;
     });
   }, [businesses, query, selectedCategory, selectedCity, selectedType, sortBy]);
+
+  const totalPages = Math.max(1, Math.ceil(allResults.length / PAGE_SIZE));
+  const paginatedResults = allResults.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const clearFilters = () => {
     setSelectedCategory("");
@@ -78,6 +90,11 @@ export default function SearchResults() {
               className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
+            {query && (
+              <button onClick={() => setQuery("")} className="text-muted-foreground hover:text-foreground transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-3 sm:w-52 bg-background border border-border rounded-xl px-4 py-2.5">
             <MapPin className="w-4 h-4 text-muted-foreground" />
@@ -205,17 +222,18 @@ export default function SearchResults() {
               <h2 className="section-title">
                 {t(lang, "results_title")}
                 <span className="text-base font-normal text-muted-foreground ml-2">
-                  ({results.length} {t(lang, "results_found")})
+                  ({allResults.length} {t(lang, "results_found")})
                 </span>
               </h2>
             </div>
 
             {isLoading ? (
-              <div className="text-center py-20">
-                <div className="text-5xl mb-4 animate-pulse">⏳</div>
-                <p className="text-muted-foreground">{lang === "pt" ? "Carregando..." : "Loading..."}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <BusinessCardSkeleton key={i} />
+                ))}
               </div>
-            ) : results.length === 0 ? (
+            ) : allResults.length === 0 ? (
               <div className="text-center py-20">
                 <div className="text-5xl mb-4">🔍</div>
                 <p className="font-display font-semibold text-xl text-foreground mb-2">
@@ -227,11 +245,50 @@ export default function SearchResults() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                {results.map((b) => (
-                  <BusinessCard key={b.id} business={b} lang={lang} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                  {paginatedResults.map((b) => (
+                    <BusinessCard key={b.id} business={b} lang={lang} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-8">
+                    <button
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-xl border border-border hover:bg-verde-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      {lang === "pt" ? "Anterior" : "Previous"}
+                    </button>
+
+                    {Array.from({ length: totalPages }).map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setPage(i + 1)}
+                        className={`w-9 h-9 rounded-xl text-sm font-semibold transition-colors ${
+                          page === i + 1
+                            ? "bg-verde text-white"
+                            : "border border-border hover:bg-verde-muted text-foreground"
+                        }`}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+
+                    <button
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
+                      className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-xl border border-border hover:bg-verde-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {lang === "pt" ? "Próxima" : "Next"}
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </main>
         </div>

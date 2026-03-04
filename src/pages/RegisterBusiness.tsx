@@ -132,15 +132,26 @@ export default function RegisterBusiness() {
       let photoUrl: string | undefined = undefined;
       if (photoFile) {
         setUploadingPhoto(true);
-        const ext = photoFile.name.split(".").pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("business-photos")
-          .upload(fileName, photoFile, { upsert: false });
-        setUploadingPhoto(false);
-        if (!uploadError && uploadData) {
-          const { data: urlData } = supabase.storage.from("business-photos").getPublicUrl(uploadData.path);
-          photoUrl = urlData.publicUrl;
+        try {
+          const ext = photoFile.name.split(".").pop();
+          const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from("business-photos")
+            .upload(fileName, photoFile, { upsert: false });
+
+          if (uploadError) {
+            console.error("Upload error:", uploadError);
+            setPhotoError(
+              lang === "pt"
+                ? "Erro ao enviar foto. O cadastro será salvo sem imagem."
+                : "Error uploading photo. Listing will be saved without image."
+            );
+          } else if (uploadData) {
+            const { data: urlData } = supabase.storage.from("business-photos").getPublicUrl(uploadData.path);
+            photoUrl = urlData.publicUrl;
+          }
+        } finally {
+          setUploadingPhoto(false);
         }
       }
 

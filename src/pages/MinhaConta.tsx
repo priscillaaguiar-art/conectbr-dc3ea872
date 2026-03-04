@@ -11,6 +11,57 @@ import { t } from "@/lib/i18n";
 import type { BusinessRow } from "@/hooks/use-businesses";
 import { supabase } from "@/integrations/supabase/client";
 
+async function autocropImage(file: File): Promise<{ file: File; previewUrl: string }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      const TARGET_RATIO = 16 / 9;
+      const srcW = img.naturalWidth;
+      const srcH = img.naturalHeight;
+      let cropX = 0, cropY = 0, cropW = srcW, cropH = srcH;
+      const currentRatio = srcW / srcH;
+      if (currentRatio > TARGET_RATIO) {
+        cropH = srcH;
+        cropW = Math.round(srcH * TARGET_RATIO);
+        cropX = Math.round((srcW - cropW) / 2);
+        cropY = 0;
+      } else {
+        cropW = srcW;
+        cropH = Math.round(srcW / TARGET_RATIO);
+        cropX = 0;
+        cropY = Math.round(srcH * 0.05);
+        if (cropY + cropH > srcH) cropY = srcH - cropH;
+        if (cropY < 0) cropY = 0;
+      }
+      const outW = Math.min(cropW, 1200);
+      const outH = Math.round(outW / TARGET_RATIO);
+      const canvas = document.createElement("canvas");
+      canvas.width = outW;
+      canvas.height = outH;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, outW, outH);
+      URL.revokeObjectURL(objectUrl);
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) { reject(new Error("Canvas toBlob failed")); return; }
+          const croppedFile = new File(
+            [blob],
+            file.name.replace(/\.[^.]+$/, "") + "_cropped.jpg",
+            { type: "image/jpeg" }
+          );
+          const previewUrl = URL.createObjectURL(blob);
+          resolve({ file: croppedFile, previewUrl });
+        },
+        "image/jpeg",
+        0.88
+      );
+    };
+    img.onerror = reject;
+    img.src = objectUrl;
+  });
+}
+
 const STATUS_BADGE: Record<string, { label: { pt: string; en: string }; className: string; icon: React.ReactNode }> = {
   pending: { label: { pt: "Pendente", en: "Pending" }, className: "bg-amber-50 text-amber-700 border-amber-200", icon: <Clock className="w-3.5 h-3.5" /> },
   approved: { label: { pt: "Aprovado", en: "Approved" }, className: "bg-verde-light text-verde border-verde/20", icon: <CheckCircle className="w-3.5 h-3.5" /> },
@@ -267,20 +318,66 @@ function EditForm({ business, lang, onCancel, onSave, saving }: {
       {/* Photo */}
       <div>
         <label className="block text-xs font-medium text-muted-foreground mb-1">{t(lang, "form_photo")}</label>
-        <label className="border border-dashed border-border rounded-xl p-4 text-center cursor-pointer block hover:border-verde/40 transition-colors">
-          <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            if (file.size > 5 * 1024 * 1024) return;
-            setPhotoFile(file);
-            setPhotoPreview(URL.createObjectURL(file));
-          }} />
+        <div className="flex items-start gap-2.5 bg-accent-muted border border-accent/25 rounded-xl px-4 py-3 mb-3">
+          <span className="text-lg flex-shrink-0">📸</span>
+          <div>
+            <p className="text-xs font-semibold text-amarelo-dark mb-0.5">
+              {lang === "pt" ? "Dica para uma foto incrível!" : "Tips for an amazing photo!"}
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {lang === "pt"
+                ? "Use uma foto horizontal (paisagem) com proporção 16:9 ou 3:2 — tipo foto de capa. Imagens com boa iluminação e fundo limpo causam muito mais impacto. PNG, JPG ou WEBP · máx. 5MB"
+                : "Use a horizontal (landscape) photo with 16:9 or 3:2 ratio — like a cover photo. Well-lit images with clean backgrounds make a much stronger impression. PNG, JPG or WEBP · max 5MB"}
+            </p>
+          </div>
+        </div>
+        <label
+          htmlFor="photo-upload-edit"
+          className="block border-2 border-dashed border-border rounded-2xl overflow-hidden cursor-pointer hover:border-primary/40 transition-colors"
+        >
+          <input
+            type="file"
+            id="photo-upload-edit"
+            accept="image/png,image/jpeg,image/webp"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              if (file.size > 5 * 1024 * 1024) return;
+              setPhotoPreview(URL.createObjectURL(file));
+              try {
+                const { file: croppedFile, previewUrl } = await autocropImage(file);
+                setPhotoFile(croppedFile);
+                setPhotoPreview(previewUrl);
+              } catch {
+                setPhotoFile(file);
+                setPhotoPreview(URL.createObjectURL(file));
+              }
+            }}
+          />
           {photoPreview ? (
-            <img src={photoPreview} alt="Preview" className="max-h-24 mx-auto rounded-lg object-contain" />
+            <div className="relative">
+              <div className="aspect-video w-full overflow-hidden">
+                <img src={photoPreview} alt="Preview" className="w-full h-full object-cover object-top" />
+              </div>
+              <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition-all flex items-center justify-center opacity-0 hover:opacity-100">
+                <span className="bg-white/90 text-foreground text-xs font-semibold px-4 py-2 rounded-full">
+                  {lang === "pt" ? "Clique para trocar a foto" : "Click to change photo"}
+                </span>
+              </div>
+              <div className="px-4 py-2.5 bg-primary-muted border-t border-primary/15 flex items-center gap-2">
+                <span className="text-primary text-xs">✓</span>
+                <p className="text-xs text-primary font-medium">
+                  {lang === "pt" ? "Foto ajustada para o formato ideal do site" : "Photo adjusted to the ideal site format"}
+                </p>
+              </div>
+            </div>
           ) : (
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Upload className="w-4 h-4" />
-              {lang === "pt" ? "Alterar foto" : "Change photo"}
+            <div className="p-8 text-center">
+              <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">
+                {lang === "pt" ? "Clique para upload ou arraste aqui" : "Click to upload or drag here"}
+              </p>
             </div>
           )}
         </label>

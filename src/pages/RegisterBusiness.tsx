@@ -136,30 +136,8 @@ export default function RegisterBusiness() {
   }
 
   if (!user) return null;
-  const [step, setStep] = useState(0);
-  const insertBusiness = useInsertBusiness();
-  const formTopRef = useRef<HTMLDivElement>(null);
-
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const [photoError, setPhotoError] = useState<string | null>(null);
 
   const steps = lang === "pt" ? STEPS_PT : STEPS_EN;
-
-  const [form, setForm] = useState({
-    name: "",
-    category: "",
-    city: "",
-    type: "company",
-    description: "",
-    whatsapp: "",
-    instagram: "",
-    phone: "",
-    email: "",
-  });
-
-  const [errors, setErrors] = useState<Partial<typeof form>>({});
 
   const validateStep = (s: number) => {
     const newErrors: Partial<typeof form> = {};

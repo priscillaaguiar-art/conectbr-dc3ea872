@@ -168,8 +168,11 @@ export function Footer({ lang }: FooterProps) {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-white/10 text-center text-xs text-white/40">
-          {t(lang, "footer_rights")}
+        <div className="mt-10 pt-6 border-t border-white/10 flex items-center justify-between flex-wrap gap-2">
+          <p className="text-xs text-white/40">{t(lang, "footer_rights")}</p>
+          <a href="/admin/login" className="text-xs text-white/25 hover:text-white/50 transition-colors">
+            Admin
+          </a>
         </div>
       </div>
     </footer>

@@ -220,6 +220,7 @@ function EditForm({ business, lang, onCancel, onSave, saving }: {
       photo: photoUrl || null,
     } as any);
     setSuccess(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (

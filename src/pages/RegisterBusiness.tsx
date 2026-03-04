@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, CheckCircle, Upload, ChevronDown } from "lucide-react";
+import { ArrowLeft, CheckCircle, Upload, ChevronDown, Globe } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { t } from "@/lib/i18n";
@@ -23,10 +23,8 @@ function formatPhoneMask(digits: string) {
   if (digits.length <= 4) return `+${digits.slice(0, 1)} (${digits.slice(1)}`;
   if (digits.length <= 7) return `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4)}`;
   if (digits.length <= 11) return `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
-  // For longer numbers (e.g. Brazil +55)
   if (digits.length <= 2) return `+${digits}`;
   if (digits.length <= 4) return `+${digits.slice(0, 2)} (${digits.slice(2)}`;
-  // Generic fallback
   return `+${digits.slice(0, 1)} (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 11)}${digits.length > 11 ? digits.slice(11) : ""}`;
 }
 
@@ -36,6 +34,7 @@ function handlePhoneInput(rawValue: string): string {
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const WEBSITE_REGEX = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w\-./?%&=]*)?$/i;
 
 async function autocropImage(file: File): Promise<{ file: File; previewUrl: string }> {
   return new Promise((resolve, reject) => {
@@ -101,6 +100,7 @@ export default function RegisterBusiness() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -112,6 +112,7 @@ export default function RegisterBusiness() {
     instagram: "",
     phone: "",
     email: "",
+    website: "",
   });
 
   const [errors, setErrors] = useState<Partial<typeof form>>({});
@@ -151,11 +152,9 @@ export default function RegisterBusiness() {
       if (!form.whatsapp && !form.phone && !form.email) {
         newErrors.whatsapp = lang === "pt" ? "Informe ao menos um contato" : "Provide at least one contact";
       }
-      // Email validation
       if (form.email && !EMAIL_REGEX.test(form.email)) {
         newErrors.email = lang === "pt" ? "Por favor, insira um e-mail válido." : "Please enter a valid email.";
       }
-      // WhatsApp validation
       if (form.whatsapp) {
         const digits = stripNonDigits(form.whatsapp);
         if (digits.length < 10 || digits.length > 15) {
@@ -164,7 +163,6 @@ export default function RegisterBusiness() {
             : "Invalid number. Use format +1 (416) 555-0000";
         }
       }
-      // Phone validation
       if (form.phone) {
         const digits = stripNonDigits(form.phone);
         if (digits.length < 10 || digits.length > 15) {
@@ -172,6 +170,9 @@ export default function RegisterBusiness() {
             ? "Número inválido. Use o formato +1 (416) 555-0000"
             : "Invalid number. Use format +1 (416) 555-0000";
         }
+      }
+      if (form.website && !WEBSITE_REGEX.test(form.website)) {
+        newErrors.website = lang === "pt" ? "URL inválida" : "Invalid URL";
       }
     }
     return newErrors;
@@ -200,6 +201,7 @@ export default function RegisterBusiness() {
       else if (Object.keys(errs1).length) setStep(1);
       return;
     }
+    setSubmitError(null);
     try {
       let photoUrl: string | undefined = undefined;
       if (photoFile) {
@@ -238,12 +240,18 @@ export default function RegisterBusiness() {
         phone: form.phone ? stripNonDigits(form.phone) : undefined,
         email: form.email || undefined,
         photo: photoUrl,
+        website: form.website || undefined,
         owner_id: user?.id || undefined,
       });
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error registering business:", err);
+      setSubmitError(
+        lang === "pt"
+          ? "Erro ao cadastrar negócio. Tente novamente."
+          : "Error registering business. Please try again."
+      );
     }
   };
 
@@ -507,6 +515,22 @@ export default function RegisterBusiness() {
                     {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
                   </div>
                 </div>
+
+                {/* Website */}
+                <div>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                    <Globe className="w-3.5 h-3.5 inline mr-1" />
+                    Website <span className="text-muted-foreground font-normal">({lang === "pt" ? "opcional" : "optional"})</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={form.website}
+                    onChange={update("website")}
+                    className={`${fieldClass(errors.website)} text-sm`}
+                    placeholder="www.meusite.com"
+                  />
+                  {errors.website && <p className="text-xs text-destructive mt-1">{errors.website}</p>}
+                </div>
               </div>
 
               <div className="flex gap-3">
@@ -540,12 +564,19 @@ export default function RegisterBusiness() {
                   {form.instagram && <div><span className="text-muted-foreground">Instagram:</span> <span className="font-medium text-foreground">{form.instagram}</span></div>}
                   {form.phone && <div><span className="text-muted-foreground">{t(lang, "phone")}:</span> <span className="font-medium text-foreground">{form.phone}</span></div>}
                   {form.email && <div><span className="text-muted-foreground">Email:</span> <span className="font-medium text-foreground">{form.email}</span></div>}
+                  {form.website && <div><span className="text-muted-foreground">Website:</span> <span className="font-medium text-foreground">{form.website}</span></div>}
                 </div>
                 <div>
                   <span className="text-sm text-muted-foreground">{t(lang, "description")}:</span>
                   <p className="text-sm text-foreground mt-1">{form.description}</p>
                 </div>
               </div>
+
+              {submitError && (
+                <div className="bg-red-50 border border-red-200 rounded-2xl px-5 py-4 text-sm text-red-700 font-medium">
+                  {submitError}
+                </div>
+              )}
 
               <div className="flex gap-3">
                 <button type="button" onClick={prevStep} className="btn-outline flex-1 py-4 text-base">

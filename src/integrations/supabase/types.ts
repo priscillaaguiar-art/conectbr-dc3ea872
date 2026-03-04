@@ -22,6 +22,7 @@ export type Database = {
           description: string
           description_en: string | null
           email: string | null
+          featured: boolean
           id: string
           instagram: string | null
           name: string
@@ -31,6 +32,7 @@ export type Database = {
           status: string
           type: string
           updated_at: string
+          website: string | null
           whatsapp: string | null
         }
         Insert: {
@@ -40,6 +42,7 @@ export type Database = {
           description: string
           description_en?: string | null
           email?: string | null
+          featured?: boolean
           id?: string
           instagram?: string | null
           name: string
@@ -49,6 +52,7 @@ export type Database = {
           status?: string
           type?: string
           updated_at?: string
+          website?: string | null
           whatsapp?: string | null
         }
         Update: {
@@ -58,6 +62,7 @@ export type Database = {
           description?: string
           description_en?: string | null
           email?: string | null
+          featured?: boolean
           id?: string
           instagram?: string | null
           name?: string
@@ -67,6 +72,7 @@ export type Database = {
           status?: string
           type?: string
           updated_at?: string
+          website?: string | null
           whatsapp?: string | null
         }
         Relationships: []

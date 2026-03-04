@@ -13,6 +13,8 @@ export interface BusinessRow {
   phone: string | null;
   email: string | null;
   photo: string | null;
+  website: string | null;
+  featured: boolean;
   type: string;
   status: string;
   created_at: string;
@@ -27,6 +29,7 @@ export function useApprovedBusinesses() {
         .from("businesses")
         .select("*")
         .eq("status", "approved")
+        .order("featured", { ascending: false })
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as BusinessRow[];
@@ -79,6 +82,7 @@ export function useInsertBusiness() {
       phone?: string;
       email?: string;
       photo?: string;
+      website?: string;
       owner_id?: string;
     }) => {
       const { data, error } = await supabase.functions.invoke("submit-business", {
@@ -106,7 +110,6 @@ export function useUpdateBusinessStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["businesses"] });
-      window.scrollTo({ top: 0, behavior: "smooth" });
     },
   });
 }
@@ -139,7 +142,22 @@ export function useDeleteBusiness() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["businesses"] });
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+  });
+}
+
+export function useToggleFeatured() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, featured }: { id: string; featured: boolean }) => {
+      const { error } = await supabase
+        .from("businesses")
+        .update({ featured })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["businesses"] });
     },
   });
 }

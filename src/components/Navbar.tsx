@@ -104,13 +104,6 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
             </button>
           )}
 
-          <a
-            href="/admin/login"
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2"
-            title="Admin"
-          >
-            Admin
-          </a>
         </div>
 
         {/* Mobile hamburger */}
@@ -164,12 +157,6 @@ export function Navbar({ lang, onLangChange }: NavbarProps) {
             </button>
           )}
 
-          <a
-            href="/admin/login"
-            className="block text-center text-xs text-muted-foreground py-2"
-          >
-            Admin
-          </a>
         </div>
       )}
     </header>

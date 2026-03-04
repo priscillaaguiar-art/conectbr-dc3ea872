@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { MapPin, ArrowRight } from "lucide-react";
+import { MapPin, ArrowRight, Star } from "lucide-react";
 import { Lang, t } from "@/lib/i18n";
 import { CATEGORIES } from "@/lib/data";
 import type { BusinessRow } from "@/hooks/use-businesses";
@@ -36,7 +36,11 @@ export function BusinessCard({ business, lang }: BusinessCardProps) {
 
   return (
     <div
-      className="bg-white border border-border rounded-[18px] overflow-hidden shadow-card hover:-translate-y-1 hover:shadow-lg hover:border-verde/20 transition-all duration-300 cursor-pointer"
+      className={`bg-white border rounded-[18px] overflow-hidden shadow-card hover:-translate-y-1 hover:shadow-lg transition-all duration-300 cursor-pointer ${
+        business.featured
+          ? "border-amarelo/40 ring-1 ring-amarelo/20"
+          : "border-border hover:border-verde/20"
+      }`}
       onClick={() => navigate(`/negocio/${business.id}`)}
     >
       <div className="aspect-video w-full relative overflow-hidden">
@@ -45,6 +49,12 @@ export function BusinessCard({ business, lang }: BusinessCardProps) {
         ) : (
           <div className="w-full h-full gradient-hero flex items-center justify-center">
             <span className="font-display font-bold text-3xl text-white">{initials}</span>
+          </div>
+        )}
+        {business.featured && (
+          <div className="absolute top-3 left-3 px-2.5 py-1 bg-amarelo/90 rounded-lg text-dark text-xs font-bold backdrop-blur-sm flex items-center gap-1">
+            <Star className="w-3 h-3 fill-current" />
+            {lang === "pt" ? "Destaque" : "Featured"}
           </div>
         )}
         {business.type === "company" && (

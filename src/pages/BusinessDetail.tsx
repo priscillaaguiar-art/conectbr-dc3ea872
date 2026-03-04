@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
 import { ArrowLeft, MapPin, MessageCircle, Instagram, Phone, Mail, ExternalLink } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -7,10 +8,42 @@ import { CATEGORIES } from "@/lib/data";
 import { useBusinessById } from "@/hooks/use-businesses";
 import { useLang } from "@/lib/LangContext";
 
+function getImageBrightness(
+  imgEl: HTMLImageElement
+): "light" | "dark" {
+  try {
+    const canvas = document.createElement("canvas");
+    const sampleH = Math.floor(imgEl.naturalHeight * 0.35);
+    const sampleY = imgEl.naturalHeight - sampleH;
+    canvas.width = Math.min(imgEl.naturalWidth, 100);
+    canvas.height = Math.min(sampleH, 60);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return "dark";
+    ctx.drawImage(
+      imgEl,
+      0, sampleY, imgEl.naturalWidth, sampleH,
+      0, 0, canvas.width, canvas.height
+    );
+    const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let total = 0;
+    let count = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      total += data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+      count++;
+    }
+    const avg = total / count;
+    return avg > 140 ? "light" : "dark";
+  } catch {
+    return "dark";
+  }
+}
+
 export default function BusinessDetail() {
   const { lang, setLang } = useLang();
   const { id } = useParams();
   const navigate = useNavigate();
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [textTheme, setTextTheme] = useState<"light" | "dark">("dark");
 
   const { data: business, isLoading } = useBusinessById(id);
   const cat = business ? CATEGORIES.find((c) => c.key === business.category) : null;
@@ -54,38 +87,96 @@ export default function BusinessDetail() {
         </button>
 
         <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-card mb-6">
+          {/* Hero image with overlaid name */}
           <div className="aspect-video w-full relative overflow-hidden">
             {business.photo ? (
-              <img src={business.photo} alt={business.name} className="w-full h-full object-cover object-top" />
+              <>
+                <img
+                  ref={imgRef}
+                  src={business.photo}
+                  alt={business.name}
+                  className="w-full h-full object-cover object-top"
+                  crossOrigin="anonymous"
+                  onLoad={() => {
+                    if (imgRef.current) {
+                      setTextTheme(getImageBrightness(imgRef.current));
+                    }
+                  }}
+                />
+                {/* Adaptive overlay */}
+                <div className={`absolute inset-0 ${
+                  textTheme === "dark"
+                    ? "bg-gradient-to-b from-black/10 via-black/30 to-black/80"
+                    : "bg-gradient-to-b from-white/10 via-white/20 to-white/75"
+                }`} />
+                {/* Name & category over photo */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h1
+                    className={`font-display font-bold text-3xl tracking-tight mb-2 ${
+                      textTheme === "dark" ? "text-white" : "text-gray-900"
+                    }`}
+                    style={{
+                      textShadow: textTheme === "dark"
+                        ? "0 2px 12px rgba(0,0,0,0.5)"
+                        : "0 2px 8px rgba(255,255,255,0.8)"
+                    }}
+                  >
+                    {business.name}
+                  </h1>
+                  {cat && (
+                    <span className={`inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full backdrop-blur-sm border ${
+                      textTheme === "dark"
+                        ? "bg-white/20 border-white/25 text-white"
+                        : "bg-black/10 border-black/15 text-gray-900"
+                    }`}>
+                      {cat.emoji} {t(lang, cat.labelKey as any)}
+                    </span>
+                  )}
+                </div>
+                {/* Type badge */}
+                {business.type === "company" && (
+                  <div className={`absolute top-4 right-4 px-3 py-1.5 backdrop-blur-sm rounded-xl text-xs font-semibold border ${
+                    textTheme === "dark"
+                      ? "bg-white/15 border-white/20 text-white"
+                      : "bg-black/10 border-black/15 text-gray-900"
+                  }`}>
+                    {lang === "pt" ? "Empresa" : "Company"}
+                  </div>
+                )}
+              </>
             ) : (
-              <div className="w-full h-full gradient-hero flex items-center justify-center">
+              <div className="w-full h-full gradient-hero flex items-center justify-center relative">
                 <span className="font-display font-bold text-4xl text-primary-foreground">{initials}</span>
-              </div>
-            )}
-            {business.type === "company" && (
-              <div className="absolute top-4 right-4 px-3 py-1.5 bg-black/30 rounded-xl text-primary-foreground text-xs font-semibold backdrop-blur-sm">
-                {lang === "pt" ? "Empresa" : "Company"}
+                {/* Name & category over gradient */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h1 className="font-display font-bold text-3xl tracking-tight mb-2 text-white"
+                    style={{ textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}
+                  >
+                    {business.name}
+                  </h1>
+                  {cat && (
+                    <span className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full backdrop-blur-sm border bg-white/20 border-white/25 text-white">
+                      {cat.emoji} {t(lang, cat.labelKey as any)}
+                    </span>
+                  )}
+                </div>
+                {business.type === "company" && (
+                  <div className="absolute top-4 right-4 px-3 py-1.5 bg-white/15 border border-white/20 backdrop-blur-sm rounded-xl text-white text-xs font-semibold">
+                    {lang === "pt" ? "Empresa" : "Company"}
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           <div className="p-6">
-            <div className="flex items-start gap-3 flex-wrap mb-4">
-              <div>
-                <h1 className="font-display font-bold text-2xl text-foreground mb-1">{business.name}</h1>
-                {cat && (
-                  <span className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full bg-primary-muted text-primary">
-                    {cat.emoji} {t(lang, cat.labelKey as any)}
-                  </span>
-                )}
-              </div>
-            </div>
-
+            {/* City */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
               <MapPin className="w-4 h-4 text-primary" />
               <span>{business.city}, Ontario, Canada</span>
             </div>
 
+            {/* Description */}
             <div className="mb-6">
               <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                 {t(lang, "description")}
@@ -93,6 +184,7 @@ export default function BusinessDetail() {
               <p className="text-foreground leading-relaxed">{description}</p>
             </div>
 
+            {/* Contact */}
             <div className="border-t border-border pt-6">
               <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
                 {t(lang, "contact")}

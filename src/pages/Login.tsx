@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLang } from "@/lib/LangContext";
@@ -10,6 +10,9 @@ export default function Login() {
   const { lang, setLang } = useLang();
   const { signInWithEmail, signUpWithEmail } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/minha-conta";
+  const isCadastroFlow = redirectTo === "/cadastrar";
 
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");

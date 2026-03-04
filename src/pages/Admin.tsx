@@ -214,11 +214,19 @@ function BusinessAdminCard({ business, lang, onApprove, onReject, onDelete, onEd
 
   return (
     <div className="bg-white border border-border rounded-2xl p-5 flex items-start gap-4">
-      <div className="w-12 h-12 rounded-xl gradient-hero flex items-center justify-center shrink-0 overflow-hidden">
+      <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border-2 border-border shadow-sm">
         {business.photo ? (
-          <img src={business.photo} alt={business.name} className="w-full h-full object-cover" />
+          <img
+            src={business.photo}
+            alt={business.name}
+            className="w-full h-full object-cover object-top"
+          />
         ) : (
-          <span className="font-display font-bold text-sm text-white">{initials}</span>
+          <div className="w-full h-full gradient-hero flex items-center justify-center">
+            <span className="font-display font-bold text-base text-white">
+              {initials}
+            </span>
+          </div>
         )}
       </div>
       <div className="flex-1 min-w-0">

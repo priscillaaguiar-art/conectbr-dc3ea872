@@ -92,14 +92,35 @@ export default function RegisterBusiness() {
   const { lang, setLang } = useLang();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const [submitted, setSubmitted] = useState(false);
+  const [step, setStep] = useState(0);
+  const insertBusiness = useInsertBusiness();
+  const formTopRef = useRef<HTMLDivElement>(null);
+
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+
+  const [form, setForm] = useState({
+    name: "",
+    category: "",
+    city: "",
+    type: "company",
+    description: "",
+    whatsapp: "",
+    instagram: "",
+    phone: "",
+    email: "",
+  });
+
+  const [errors, setErrors] = useState<Partial<typeof form>>({});
 
   useEffect(() => {
     if (!loading && !user) {
       navigate("/login?redirect=/cadastrar", { replace: true });
     }
   }, [user, loading, navigate]);
-
-  const [submitted, setSubmitted] = useState(false);
 
   if (loading) {
     return (
